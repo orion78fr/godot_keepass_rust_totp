@@ -110,6 +110,8 @@ jobs:
         with:
           toolchain: stable
           target: x86_64-linux-android 
+      - name: Install gcc ?
+        run: sudo apt-get install -y --no-install-recommends build-essentials
           
       - name: Compile native lib for aarch64 android
         working-directory: native/src
