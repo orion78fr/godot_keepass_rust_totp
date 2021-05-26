@@ -1,0 +1,9 @@
+[gd_resource type="NativeScript" format=2]
+
+[ext_resource path="res://native/godot_rs_keepass.gdnlib" type="GDNativeLibrary" id=1]
+
+[resource]
+resource_name = "KeepassTotp"
+class_name = "KeepassTotp"
+script_class_name = "KeepassTotp"
+library = ExtResource( 1 )

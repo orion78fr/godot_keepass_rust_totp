@@ -8,6 +8,16 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "",
+"class": "KeepassTotp",
+"language": "NativeScript",
+"path": "res://native/KeepassTotp.gdns"
+} ]
+_global_script_class_icons={
+"KeepassTotp": ""
+}
+
 [application]
 
 config/name="Keepass Rust Totp"

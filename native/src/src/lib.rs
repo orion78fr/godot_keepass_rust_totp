@@ -12,7 +12,7 @@ impl KeepassTotp {
     }
     #[export]
     fn test(&self, _owner: TRef<Reference>) -> String {
-        "Hello World".to_string()
+        "Hello World from Rust !".to_string()
     }
 }
 
