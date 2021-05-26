@@ -1,18 +1,3 @@
-[package]
-name = "godot_rs_keepass"
-version = "0.1.0"
-authors = ["Guillaume Turchini <orion+github@orion78.fr>"]
-edition = "2018"
-
-[dependencies]
-gdnative = "0.9.3"
-
-[lib]
-crate-type = ["cdylib"]
-
-[profile.release]
-debug = true
-
 [target.aarch64-linux-android]
 linker = "/usr/local/lib/android/sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang"
 [target.x86_64-linux-android]
