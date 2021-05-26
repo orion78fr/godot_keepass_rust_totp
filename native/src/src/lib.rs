@@ -11,7 +11,7 @@ impl KeepassTotp {
         KeepassTotp
     }
     #[export]
-    fn test(&self, owner: TRef<Reference>) -> String {
+    fn test(&self, _owner: TRef<Reference>) -> String {
         "Hello World".to_string()
     }
 }
