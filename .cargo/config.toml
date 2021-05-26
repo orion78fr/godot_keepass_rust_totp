@@ -2,6 +2,6 @@
 target-dir = "native/target"
 
 [target.aarch64-linux-android]
-linker = "/github/home/.android/sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang"
+linker = "/github/home/.android/sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang"
 [target.x86_64-linux-android]
-linker = "/github/home/.android/sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android30-clang"
+linker = "/github/home/.android/sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android30-clang"
