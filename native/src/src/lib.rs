@@ -1,17 +1,20 @@
 use gdnative::prelude::*;
-use gdnative::api::{EditorPlugin, Resource, Script, Texture, ImageTexture, Image};
-use gdnative::prelude::Null;
+use gdnative::api::{Reference};
 
 #[derive(NativeClass)]
+#[inherit(Reference)]
 struct KeepassTotp {
 }
 
 #[methods]
 #[no_constructor]
 impl KeepassTotp {
+    fn new(_owner: TRef<Reference>) -> Self {
+        KeepassTotp
+    }
     #[export]
-    fn test() -> String {
-        "Hello World"
+    fn test(&self, owner: TRef<Reference>) -> String {
+        "Hello World".to_string()
     }
 }
 
