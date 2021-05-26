@@ -32,8 +32,8 @@ jobs:
           use-cross: true
           command: build
           args: --manifest-path native/src/Cargo.toml --target x86_64-pc-windows-gnu --release
-          env:
-            CC: x86_64-w64-mingw32-gcc
+        env:
+          CC: x86_64-w64-mingw32-gcc
       - name: Build
         run: |
           mkdir -v -p exports/win
