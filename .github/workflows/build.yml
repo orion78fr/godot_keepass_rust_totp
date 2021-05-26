@@ -25,13 +25,15 @@ jobs:
           toolchain: stable
           target: x86_64-pc-windows-gnu
       - name: Install build essentials
-        run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev libc6-dev libc6-dev-amd64-cross
+        run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev mingw-w64
       - name: Compile native lib for windows
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
           args: --manifest-path native/src/Cargo.toml --target x86_64-pc-windows-gnu --release
+          env:
+            CC: x86_64-w64-mingw32-gcc
       - name: Build
         run: |
           mkdir -v -p exports/win
@@ -150,7 +152,7 @@ jobs:
           toolchain: stable
           target: x86_64-linux-android 
       - name: Install build essentials
-        run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev libc6-dev libc6-dev-arm64-cross
+        run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev g++-multilib gcc-multilib libc6-dev libc6-dev-arm64-cross
           
       - name: Compile native lib for aarch64 android
         uses: actions-rs/cargo@v1
