@@ -1,0 +1,22 @@
+[entry]
+
+X11.64="res://native/target/linux/libgodot_rs_keepass.so"
+OSX.64="res://native/target/macos/libgodot_rs_keepass.dylib"
+Windows.64="res://native/target/windows/libgodot_rs_keepass.dll"
+Android.arm64-v8a="res://native/target/android.arm64-v8a/libgodot_rs_keepass.so"
+Android.x86_64="res://native/target/android.x86_64/libgodot_rs_keepass.so"
+
+[dependencies]
+
+X11.64=[  ]
+OSX.64=[  ]
+Windows.64=[  ]
+Android.arm64-v8a=[  ]
+Android.x86_64=[  ]
+
+[general]
+
+singleton=false
+load_once=true
+symbol_prefix="godot_"
+reloadable=true

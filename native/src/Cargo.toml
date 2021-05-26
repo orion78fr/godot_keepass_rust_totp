@@ -1,0 +1,14 @@
+[package]
+name = "godot_rs_keepass"
+version = "0.1.0"
+authors = ["Guillaume Turchini <orion+github@orion78.fr>"]
+edition = "2018"
+
+[dependencies]
+gdnative = "0.9.3"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+debug = true
