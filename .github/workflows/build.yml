@@ -59,6 +59,8 @@ jobs:
         with:
           toolchain: stable
           target: x86_64-unknown-linux-gnu
+      - name: Install build essentials
+        run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
       - name: Compile native lib for linux
         uses: actions-rs/cargo@v1
         with:
