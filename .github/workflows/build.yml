@@ -98,7 +98,7 @@ jobs:
       - name: Install Android build tools
         run: |
           sdkmanager "build-tools;30.0.3"
-          #sdkmanager "platforms;android-30"
+          sdkmanager "ndk;22.1.7171670"
           
       - name: Install aarch64 android rust toolchain
         uses: actions-rs/toolchain@v1
