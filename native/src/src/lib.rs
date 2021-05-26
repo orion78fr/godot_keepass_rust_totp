@@ -3,11 +3,9 @@ use gdnative::api::{Reference};
 
 #[derive(NativeClass)]
 #[inherit(Reference)]
-struct KeepassTotp {
-}
+struct KeepassTotp;
 
 #[methods]
-#[no_constructor]
 impl KeepassTotp {
     fn new(_owner: TRef<Reference>) -> Self {
         KeepassTotp
