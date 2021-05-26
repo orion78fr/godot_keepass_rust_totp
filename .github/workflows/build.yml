@@ -111,7 +111,7 @@ jobs:
           toolchain: stable
           target: x86_64-linux-android 
       - name: Install build essentials
-        run: apt-get install -y --no-install-recommends build-essential
+        run: apt-get update && apt-get install -y --no-install-recommends build-essential
           
       - name: Compile native lib for aarch64 android
         working-directory: native/src
