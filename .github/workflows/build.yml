@@ -26,9 +26,11 @@ jobs:
           target: x86_64-pc-windows-gnu
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
+      - name: Install cross
+        run: cargo install cross
       - name: Compile native lib for windows
         working-directory: native/src
-        run: cargo build --target x86_64-pc-windows-gnu --release
+        run: cross build --target x86_64-pc-windows-gnu --release
       - name: Build
         run: |
           mkdir -v -p exports/win
