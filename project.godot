@@ -24,6 +24,10 @@ config/name="Keepass Rust Totp"
 run/main_scene="res://Main.tscn"
 config/icon="res://icon.png"
 
+[display]
+
+window/handheld/orientation="portrait"
+
 [physics]
 
 common/enable_pause_aware_picking=true
