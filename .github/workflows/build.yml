@@ -113,7 +113,7 @@ jobs:
           
       - name: Compile native lib for aarch64 android
         working-directory: native/src
-        run: cargo build --target aarch64-linux-android --release
+        run: cargo build -v --target aarch64-linux-android --release
       - name: Compile native lib for x86_64 android
         working-directory: native/src
         run: cargo build --target x86_64-linux-android --release
