@@ -152,9 +152,6 @@ jobs:
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev g++-multilib gcc-multilib libc6-dev libc6-dev-arm64-cross
           
-      - name: DEBUG find this linker...
-        run: find ${ANDROID_SDK_ROOT} -type f | grep clang
-          
       - name: Compile native lib for aarch64 android
         uses: actions-rs/cargo@v1
         with:
