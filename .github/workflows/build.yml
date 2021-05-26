@@ -26,11 +26,12 @@ jobs:
           target: x86_64-pc-windows-gnu
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
-      - name: Install cross
-        run: cargo install cross
       - name: Compile native lib for windows
-        working-directory: native/src
-        run: cross build --target x86_64-pc-windows-gnu --release
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --manifest-path native/src/Cargo.toml --target x86_64-pc-windows-gnu --release
       - name: Build
         run: |
           mkdir -v -p exports/win
@@ -98,8 +99,11 @@ jobs:
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
       - name: Compile native lib for mac
-        working-directory: native/src
-        run: cargo build --target x86_64-apple-darwin --release
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --manifest-path native/src/Cargo.toml --target x86_64-apple-darwin --release
       - name: Build
         run: |
           mkdir -v -p exports/mac
@@ -149,11 +153,17 @@ jobs:
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
           
       - name: Compile native lib for aarch64 android
-        working-directory: native/src
-        run: cargo build --target aarch64-linux-android --release
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --manifest-path native/src/Cargo.toml --target aarch64-linux-android --release
       - name: Compile native lib for x86_64 android
-        working-directory: native/src
-        run: cargo build --target x86_64-linux-android --release
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --manifest-path native/src/Cargo.toml --target x86_64-linux-android --release
           
       - name: Build
         run: |
