@@ -21,6 +21,3 @@ fn init(handle: InitHandle) {
 }
 
 godot_init!(init);
-
-fn main() {
-}
