@@ -13,6 +13,3 @@ crate-type = ["cdylib"]
 [profile.release]
 debug = true
 split-debuginfo = "off"
-
-[target.wasm32-unknown-emscripten]
-rustc-cdylib-link-arg = ["-s STANDALONE_WASM"]

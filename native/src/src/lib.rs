@@ -21,3 +21,7 @@ fn init(handle: InitHandle) {
 }
 
 godot_init!(init);
+
+#[no_mangle]
+pub extern "C" fn main() {
+}
