@@ -129,7 +129,7 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --manifest-path native/src/Cargo.toml --target x86_64-apple-darwin --release -C split-debuginfo off
+          args: --manifest-path native/src/Cargo.toml --target x86_64-apple-darwin --release
         env:
           CC: /osxcross/bin/x86_64-apple-darwin14-cc
           CXX: /osxcross/bin/x86_64-apple-darwin14-c++

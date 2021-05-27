@@ -12,3 +12,4 @@ crate-type = ["cdylib"]
 
 [profile.release]
 debug = true
+split-debuginfo = off
