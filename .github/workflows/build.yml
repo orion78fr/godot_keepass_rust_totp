@@ -108,7 +108,7 @@ jobs:
           toolchain: stable
           target: x86_64-apple-darwin
       - name: Install build essentials
-        run: apt-get update && apt-get install -y --no-install-recommends build-essential clang cmake libxml2-dev libz-dev libssl-devel
+        run: apt-get update && apt-get install -y --no-install-recommends build-essential clang cmake libxml2-dev libz-dev libssl-dev
 
       - name: Clone osxcross
         uses: actions/checkout@v2
