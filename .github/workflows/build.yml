@@ -124,6 +124,9 @@ jobs:
           OSX_VERSION_MIN: 10.7
           UNATTENDED: yes
 
+      - name: DEBUG
+        run: find osxcross/out
+
       - name: Compile native lib for mac
         uses: actions-rs/cargo@v1
         with:
