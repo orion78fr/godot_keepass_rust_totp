@@ -232,7 +232,9 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
-          
+
+      - name: Install build essentials
+        run: apt-get update && apt-get install -y --no-install-recommends build-essential clang  xz-utils
       - name: Setup emscripten sdk
         uses: mymindstorm/setup-emsdk@v9
       
