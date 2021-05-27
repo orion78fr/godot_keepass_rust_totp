@@ -120,7 +120,7 @@ jobs:
       - name: Setup cross compiler
         run: ./osxcross/build.sh
         env:
-          TARGET_DIR: osxcross/out
+          TARGET_DIR: ${{env.GITHUB_WORKSPACE}}/osxcross/out
           OSX_VERSION_MIN: 10.7
           UNATTENDED: yes
 
