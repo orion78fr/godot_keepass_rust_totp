@@ -9,6 +9,7 @@ env:
   ANDROID_VERSION: 30
   ANDROID_NDK_VERSION: 22.1.7171670
   ANDROID_BUILD_TOOLS_VERSION: 30.0.3
+  MACOS_SDK_TAR: https://s3.dockerproject.org/darwin/v2/MacOSX10.10.sdk.tar.xz
 
 jobs:
   export-win:
@@ -78,8 +79,6 @@ jobs:
           args: --manifest-path native/src/Cargo.toml --target x86_64-unknown-linux-gnu --release
         env:
           CARGO_TARGET_DIR: native/target
-      - name: DEBUG
-        run: find native
       - name: Build
         run: |
           mkdir -v -p exports/lin
@@ -110,6 +109,21 @@ jobs:
           target: x86_64-apple-darwin
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
+
+      - name: Clone osxcross
+        uses: actions/checkout@v2
+        with:
+          repository: 'tpoechtrager/osxcross'
+          path: './osxcross'
+      - name: Get Macos SDK
+        run: wget -P osxcross/tarballs/ -nc ${{env.MACOS_SDK_TAR}}
+      - name: Setup cross compiler
+        run: ./osxcross/build.sh
+        env:
+          TARGET_DIR: osxcross/out
+          OSX_VERSION_MIN: 10.7
+          UNATTENDED: yes
+
       - name: Compile native lib for mac
         uses: actions-rs/cargo@v1
         with:
@@ -117,7 +131,10 @@ jobs:
           command: build
           args: --manifest-path native/src/Cargo.toml --target x86_64-apple-darwin --release
         env:
+          CC: osxcross/out/bin/x86_64-apple-darwin14-cc
+          CARGO_TARGET_X86_64_APPLE_DARWIN_LINKER: osxcross/out/bin/x86_64-apple-darwin14-cc
           CARGO_TARGET_DIR: native/target
+          C_INCLUDE_PATH: osxcross/out/SDK/MacOSX10.10.sdk/usr/include
       - name: Build
         run: |
           mkdir -v -p exports/mac
