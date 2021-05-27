@@ -239,7 +239,7 @@ jobs:
         uses: mymindstorm/setup-emsdk@v10
         
       - name: DEBUG
-        run: python --version
+        run: cat $(which emcc)
       
       - name: Install emscripten rust toolchain
         uses: actions-rs/toolchain@v1
@@ -254,7 +254,7 @@ jobs:
           args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release
         env:
           CC: python3 emcc
-          CARGO_TARGET_WASM_UNKNOWN_EMSCRIPTEN_LINKER: python3 emlink
+          #CARGO_TARGET_WASM_UNKNOWN_EMSCRIPTEN_LINKER: python3 emlink
           C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
           
       - name: Build
