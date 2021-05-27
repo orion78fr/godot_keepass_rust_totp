@@ -220,3 +220,36 @@ jobs:
           path: exports/android
           retention-days: 14
 
+  export-html:
+    name: HTML5 export
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:3.3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup godot templates
+        run: |
+          mkdir -v -p ~/.local/share/godot/templates
+          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+      - name: Install emscriptem rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-emscriptem
+      - name: Compile native lib for wasm
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscriptem --release
+      - name: Build
+        run: |
+          mkdir -v -p exports/web
+          godot -v --export "HTML5" exports/web/${EXPORT_NAME}.html
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: HTML5
+          path: exports/web
+          retention-days: 14
