@@ -166,7 +166,7 @@ jobs:
           command: build
           args: --manifest-path native/src/Cargo.toml --target aarch64-linux-android --release --target-dir native/target
         env:
-          CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER: ${ANDROID_SDK_ROOT}/ndk/${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android${ANDROID_VERSION}-clang
+          CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER: ${{env.ANDROID_SDK_ROOT}}/ndk/${{env.ANDROID_NDK_VERSION}}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android${{env.ANDROID_VERSION}}-clang
       - name: Compile native lib for x86_64 android
         uses: actions-rs/cargo@v1
         with:
@@ -174,7 +174,7 @@ jobs:
           command: build
           args: --manifest-path native/src/Cargo.toml --target x86_64-linux-android --release --target-dir native/target
         env:
-          CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER: ${ANDROID_SDK_ROOT}/ndk/${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${ANDROID_VERSION}-clang
+          CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER: ${{env.ANDROID_SDK_ROOT}}/ndk/${{env.ANDROID_NDK_VERSION}}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${{env.ANDROID_VERSION}}-clang
       - name: Build
         run: |
           godot -e -q
