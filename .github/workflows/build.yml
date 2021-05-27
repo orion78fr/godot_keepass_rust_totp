@@ -236,13 +236,13 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          target: wasm32-unknown-emscriptem
+          target: wasm32-unknown-emscripten
       - name: Compile native lib for wasm
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
-          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscriptem --release
+          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release
       - name: Build
         run: |
           mkdir -v -p exports/web
