@@ -76,7 +76,7 @@ jobs:
           command: build
           args: --manifest-path native/src/Cargo.toml --target x86_64-unknown-linux-gnu --release --target-dir native/target
       - name: DEBUG
-        run: ls -la native/target/x86_64-unknown-linux-gnu/release
+        run: find native/target
       - name: Build
         run: |
           mkdir -v -p exports/lin
