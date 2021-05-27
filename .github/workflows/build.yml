@@ -251,8 +251,7 @@ jobs:
           args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release
         env:
           CC: emcc
-          RUSTFLAGS: -Clink-args=--no-entry
-          #CARGO_TARGET_WASM_UNKNOWN_EMSCRIPTEN_LINKER: python3 emlink
+          RUSTFLAGS: -C link-arg=--no-entry
           C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
           
       - name: Build
