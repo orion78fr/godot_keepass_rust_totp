@@ -248,10 +248,9 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release
+          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release --lib
         env:
           CC: emcc
-          RUSTFLAGS: -C link-arg=--no-entry
           C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
           
       - name: Build
