@@ -5,6 +5,10 @@ env:
   GODOT_VERSION: 3.3
   EXPORT_NAME: keepassTotp
   CARGO_TERM_COLOR: always
+  JAVA_VERSION: 1.8
+  ANDROID_VERSION: 30
+  ANDROID_NDK_VERSION: 22.1.7171670
+  ANDROID_BUILD_TOOLS_VERSION: 30.0.3
 
 jobs:
   export-win:
@@ -31,9 +35,10 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --manifest-path native/src/Cargo.toml --target x86_64-pc-windows-gnu --release
+          args: --manifest-path native/src/Cargo.toml --target x86_64-pc-windows-gnu --release --target-dir native/target
         env:
           CC: x86_64-w64-mingw32-gcc
+          CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER: x86_64-w64-mingw32-ld
       - name: Build
         run: |
           mkdir -v -p exports/win
@@ -69,7 +74,7 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --manifest-path native/src/Cargo.toml --target x86_64-unknown-linux-gnu --release
+          args: --manifest-path native/src/Cargo.toml --target x86_64-unknown-linux-gnu --release --target-dir native/target
       - name: Build
         run: |
           mkdir -v -p exports/lin
@@ -105,7 +110,7 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --manifest-path native/src/Cargo.toml --target x86_64-apple-darwin --release
+          args: --manifest-path native/src/Cargo.toml --target x86_64-apple-darwin --release --target-dir native/target
       - name: Build
         run: |
           mkdir -v -p exports/mac
@@ -130,16 +135,16 @@ jobs:
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
           
-      - name: Setup JDK 1.8
+      - name: Setup JDK ${JAVA_VERSION}
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          java-version: ${JAVA_VERSION}
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
       - name: Install Android build tools
         run: |
-          sdkmanager "build-tools;30.0.3"
-          sdkmanager "ndk;22.1.7171670"
+          sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
+          sdkmanager "ndk;${ANDROID_NDK_VERSION}"
           
       - name: Install aarch64 android rust toolchain
         uses: actions-rs/toolchain@v1
@@ -159,14 +164,17 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --manifest-path native/src/Cargo.toml --target aarch64-linux-android --release
+          args: --manifest-path native/src/Cargo.toml --target aarch64-linux-android --release --target-dir native/target
+        env:
+          CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER: ${ANDROID_SDK_ROOT}/ndk/${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android${ANDROID_VERSION}-clang
       - name: Compile native lib for x86_64 android
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
-          args: --manifest-path native/src/Cargo.toml --target x86_64-linux-android --release
-          
+          args: --manifest-path native/src/Cargo.toml --target x86_64-linux-android --release --target-dir native/target
+        env:
+          CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER: ${ANDROID_SDK_ROOT}/ndk/${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${ANDROID_VERSION}-clang
       - name: Build
         run: |
           godot -e -q
