@@ -236,7 +236,7 @@ jobs:
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang  xz-utils
       - name: Setup emscripten sdk
-        uses: mymindstorm/setup-emsdk@v9
+        uses: mymindstorm/setup-emsdk@v10
       
       - name: Install emscripten rust toolchain
         uses: actions-rs/toolchain@v1
