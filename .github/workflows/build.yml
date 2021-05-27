@@ -125,7 +125,7 @@ jobs:
           UNATTENDED: yes
 
       - name: DEBUG
-        run: find osxcross/out
+        run: find ${{env.GITHUB_WORKSPACE}}/osxcross/out
 
       - name: Compile native lib for mac
         uses: actions-rs/cargo@v1
@@ -135,6 +135,7 @@ jobs:
           args: --manifest-path native/src/Cargo.toml --target x86_64-apple-darwin --release
         env:
           CC: osxcross/out/bin/x86_64-apple-darwin14-cc
+          CXX: osxcross/out/bin/x86_64-apple-darwin14-cc
           CARGO_TARGET_X86_64_APPLE_DARWIN_LINKER: osxcross/out/bin/x86_64-apple-darwin14-cc
           CARGO_TARGET_DIR: native/target
           C_INCLUDE_PATH: osxcross/out/SDK/MacOSX10.10.sdk/usr/include
