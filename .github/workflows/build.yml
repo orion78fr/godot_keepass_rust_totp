@@ -251,7 +251,7 @@ jobs:
           args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release
         env:
           CC: emcc
-          C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/system/include/
+          C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/system/lib/libc/musl/include/
       - name: Build
         run: |
           mkdir -v -p exports/web
