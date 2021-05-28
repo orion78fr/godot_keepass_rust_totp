@@ -260,7 +260,7 @@ jobs:
       - name: Build
         run: |
           mkdir -v -p exports/web
-          godot -v --export "HTML5" exports/web/${EXPORT_NAME}.html
+          godot -v --export-debug "HTML5" exports/web/${EXPORT_NAME}.html
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
