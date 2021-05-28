@@ -286,7 +286,7 @@ jobs:
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
 
       - name: Install build essentials
-        run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
+        run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev
       - name: Install wasm32 rust toolchain
         uses: actions-rs/toolchain@v1
         with:
