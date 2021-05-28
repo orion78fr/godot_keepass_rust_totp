@@ -133,9 +133,9 @@ jobs:
         env:
           CC: /osxcross/bin/x86_64-apple-darwin14-cc
           CXX: /osxcross/bin/x86_64-apple-darwin14-c++
+          C_INCLUDE_PATH: /osxcross/SDK/MacOSX10.10.sdk/usr/include
           CARGO_TARGET_X86_64_APPLE_DARWIN_LINKER: /osxcross/bin/x86_64-apple-darwin14-cc
           CARGO_TARGET_DIR: native/target
-          C_INCLUDE_PATH: /osxcross/SDK/MacOSX10.10.sdk/usr/include
       
       - name: Build
         run: |
@@ -290,7 +290,9 @@ jobs:
       - name: Get Wasi toolchain
         run: |
           wget -nc https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-12/wasi-sdk-12.0-linux.tar.gz
-          tar xf wasi-sdk-12.0-linux.tar.gz
+          tar xvf wasi-sdk-12.0-linux.tar.gz
+      - name: DEBUG
+        run: find wasi-sdk-12.0/
       - name: Install wasm32 rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -306,8 +308,8 @@ jobs:
           args: --manifest-path native/src/Cargo.toml --target wasm32-wasi -v
         env:
           CC: wasi-sdk-12.0/bin/clang
-          CARGO_TARGET_WASM32_WASI_LINKER: wasi-sdk-12.0/bin/wasm-ld
           C_INCLUDE_PATH: wasi-sdk-12.0/share/wasi-sysroot/include
+          CARGO_TARGET_WASM32_WASI_LINKER: wasi-sdk-12.0/bin/wasm-ld
           CARGO_TARGET_DIR: native/target
 
       - name: Build
