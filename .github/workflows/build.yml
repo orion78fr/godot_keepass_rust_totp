@@ -291,7 +291,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          target: wasm32-unknown-unknown
+          target: wasm32-wasi
       - name: Install cross
         run: cargo install cross
       - name: Compile native lib for wasm
@@ -299,7 +299,7 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-unknown -v
+          args: --manifest-path native/src/Cargo.toml --target wasm32-wasi -v
         env:
           CARGO_TARGET_DIR: native/target
 
