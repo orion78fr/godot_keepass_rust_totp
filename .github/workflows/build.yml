@@ -255,7 +255,7 @@ jobs:
         env:
           CC: emcc
           #RUSTFLAGS: -C link-arg=-fno-exceptions -C link-arg=-s -C link-arg=DISABLE_EXCEPTION_CATCHING=1
-          EMMAKEN_CFLAGS: -s ERROR_ON_UNDEFINED_SYMBOLS=0 -g -gsource-map -s ASSERTIONS=1 -shared
+          EMMAKEN_CFLAGS: -s ERROR_ON_UNDEFINED_SYMBOLS=0 -g -gsource-map -s ASSERTIONS=1 -s SIDE_MODULE=1 
           C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
           CARGO_TARGET_DIR: native/target
 
