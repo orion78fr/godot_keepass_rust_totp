@@ -136,9 +136,6 @@ jobs:
           CARGO_TARGET_X86_64_APPLE_DARWIN_LINKER: /osxcross/bin/x86_64-apple-darwin14-cc
           CARGO_TARGET_DIR: native/target
           C_INCLUDE_PATH: /osxcross/SDK/MacOSX10.10.sdk/usr/include
-          
-      - name: DEBUG
-        run: find native/target
       
       - name: Build
         run: |
@@ -261,9 +258,6 @@ jobs:
           EMMAKEN_CFLAGS: -s ERROR_ON_UNDEFINED_SYMBOLS=0 -g -gsource-map
           C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
           CARGO_TARGET_DIR: native/target
-          
-      - name: DEBUG
-        run: find native/target
 
       - name: Build
         run: |
