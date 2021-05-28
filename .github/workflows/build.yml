@@ -269,3 +269,10 @@ jobs:
           name: HTML5
           path: exports/web
           retention-days: 14
+      - name: Upload WASM
+        uses: actions/upload-artifact@v2
+        with:
+          name: WASM
+          path: native/target/wasm32-unknown-emscripten/debug/godot_rs_keepass.wasm
+          retention-days: 1
+          
