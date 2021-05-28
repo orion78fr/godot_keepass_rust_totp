@@ -251,11 +251,11 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten -vv
+          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten -Crelocation-model=pic -vv
         env:
           CC: emcc
           #RUSTFLAGS: -C link-arg=-fno-exceptions -C link-arg=-s -C link-arg=DISABLE_EXCEPTION_CATCHING=1
-          EMMAKEN_CFLAGS: -s ERROR_ON_UNDEFINED_SYMBOLS=0 -g -gsource-map -s ASSERTIONS=1 -s SIDE_MODULE=1 
+          EMMAKEN_CFLAGS: -s ERROR_ON_UNDEFINED_SYMBOLS=0 -g -gsource-map -s ASSERTIONS=1 -s SIDE_MODULE=1 -fpic --shared
           C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
           CARGO_TARGET_DIR: native/target
 
