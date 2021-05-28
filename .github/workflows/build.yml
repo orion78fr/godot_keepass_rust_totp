@@ -256,7 +256,7 @@ jobs:
           CC: emcc
           #RUSTFLAGS: -C link-arg=-fno-exceptions -C link-arg=-s -C link-arg=DISABLE_EXCEPTION_CATCHING=1
           RUSTFLAGS: -C relocation-model=pic #--emit=obj
-          EMMAKEN_CFLAGS: -g -gsource-map -s ASSERTIONS=1 -fPIC --shared --import-memory --export-all --allow-undefined
+          EMMAKEN_CFLAGS: -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASSERTIONS=1 -s SIDE_MODULE=1 -g -gsource-map -fPIC --shared --import-memory --export-all --allow-undefined
           C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
           CARGO_TARGET_DIR: native/target
 

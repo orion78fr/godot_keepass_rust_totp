@@ -21,8 +21,3 @@ fn init(handle: InitHandle) {
 }
 
 godot_init!(init);
-
-#[no_mangle]
-pub extern "C" fn main(_: i32, _:i32) -> i32 {
-    return 0;
-}
