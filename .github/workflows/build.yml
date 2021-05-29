@@ -290,9 +290,7 @@ jobs:
       - name: Get Wasi toolchain
         run: |
           wget -nc https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-12/wasi-sdk-12.0-linux.tar.gz
-          tar xvf wasi-sdk-12.0-linux.tar.gz
-      - name: DEBUG
-        run: find wasi-sdk-12.0/
+          tar xvf wasi-sdk-12.0-linux.tar.gz -C /
       - name: Install wasm32 rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -307,9 +305,9 @@ jobs:
           command: build
           args: --manifest-path native/src/Cargo.toml --target wasm32-wasi -v
         env:
-          CC: wasi-sdk-12.0/bin/clang
-          C_INCLUDE_PATH: wasi-sdk-12.0/share/wasi-sysroot/include
-          CARGO_TARGET_WASM32_WASI_LINKER: wasi-sdk-12.0/bin/wasm-ld
+          CC: /wasi-sdk-12.0/bin/clang
+          C_INCLUDE_PATH: /wasi-sdk-12.0/share/wasi-sysroot/include
+          CARGO_TARGET_WASM32_WASI_LINKER: /wasi-sdk-12.0/bin/wasm-ld
           CARGO_TARGET_DIR: native/target
 
       - name: Build
