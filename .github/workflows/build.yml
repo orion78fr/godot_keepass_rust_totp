@@ -307,7 +307,7 @@ jobs:
         env:
           CC: /wasi-sdk-12.0/bin/clang
           C_INCLUDE_PATH: /wasi-sdk-12.0/share/wasi-sysroot/include
-          CARGO_TARGET_WASM32_WASI_LINKER: /wasi-sdk-12.0/bin/wasm-ld
+          #CARGO_TARGET_WASM32_WASI_LINKER: /wasi-sdk-12.0/bin/wasm-ld
           CARGO_TARGET_DIR: native/target
 
       - name: Build
