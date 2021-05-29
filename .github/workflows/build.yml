@@ -310,6 +310,7 @@ jobs:
           C_INCLUDE_PATH: /wasi-sdk-12.0/share/wasi-sysroot/include
           #CARGO_TARGET_WASM32_WASI_LINKER: /wasi-sdk-12.0/bin/lld
           CARGO_TARGET_DIR: native/target
+          CARGO_RUST_LLD: true
           
       - name: DEBUG
         run: |
