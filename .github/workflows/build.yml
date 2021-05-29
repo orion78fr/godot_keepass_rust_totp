@@ -312,7 +312,10 @@ jobs:
           CARGO_TARGET_DIR: native/target
           
       - name: DEBUG
-        run: /wasi-sdk-12.0/bin/llvm-objdump -x native/target/wasm32-wasi/debug/godot_rs_keepass.wasm
+        run: |
+          wget -nc https://github.com/WebAssembly/wabt/releases/download/1.0.23/wabt-1.0.23-ubuntu.tar.gz
+          tar xvf wabt-1.0.23-ubuntu.tar.gz
+          wabt-1.0.23/bin/wasm-objdump -x native/target/wasm32-wasi/debug/godot_rs_keepass.wasm
       - name: Build
         run: |
           mkdir -v -p exports/web
