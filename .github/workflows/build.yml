@@ -221,57 +221,6 @@ jobs:
           path: exports/android
           retention-days: 14
 
-  # export-html:
-    # name: HTML5 export
-    # runs-on: ubuntu-latest
-    # container:
-      # image: barichello/godot-ci:3.3
-    # steps:
-      # - name: Checkout
-        # uses: actions/checkout@v2
-      # - name: Setup godot templates
-        # run: |
-          # mkdir -v -p ~/.local/share/godot/templates
-          # mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
-
-      # - name: Install build essentials
-        # run: apt-get update && apt-get install -y --no-install-recommends build-essential clang python3 xz-utils
-      # - name: Setup emscripten sdk
-        # uses: mymindstorm/setup-emsdk@v10
-
-      # - name: Install emscripten rust toolchain
-        # uses: actions-rs/toolchain@v1
-        # with:
-          # toolchain: stable
-          # target: wasm32-unknown-emscripten
-      # - name: Install cross
-        # run: cargo install cross
-      # - name: Compile native lib for wasm
-        # uses: actions-rs/cargo@v1
-        # with:
-          # use-cross: true
-          # command: build
-          # args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten -v
-        # env:
-          # CC: emcc
-          # RUSTFLAGS: -C link-arg=-fno-exceptions -C link-arg=-s -C link-arg=DISABLE_EXCEPTION_CATCHING=1
-          # RUSTFLAGS: -C relocation-model=pic --emit=obj
-          # EMMAKEN_CFLAGS: -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASSERTIONS=1 -g -gsource-map -fPIC --shared --import-memory --export-all --allow-undefined # -s SIDE_MODULE=1
-          # C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
-          # CARGO_TARGET_DIR: native/target
-
-      # - name: Build
-        # run: |
-          # mkdir -v -p exports/web
-          # godot -v --export-debug "HTML5" exports/web/${EXPORT_NAME}.html
-      # - name: Upload Artifact
-        # uses: actions/upload-artifact@v2
-        # with:
-          # name: HTML5
-          # path: exports/web
-          # retention-days: 14
-          
-          
   export-html:
     name: HTML5 export
     runs-on: ubuntu-latest
@@ -286,16 +235,15 @@ jobs:
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
 
       - name: Install build essentials
-        run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
-      - name: Get Wasi toolchain
-        run: |
-          wget -nc https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-12/wasi-sdk-12.0-linux.tar.gz
-          tar xvf wasi-sdk-12.0-linux.tar.gz -C /
-      - name: Install wasm32 rust toolchain
+        run: apt-get update && apt-get install -y --no-install-recommends build-essential clang python3 xz-utils
+      - name: Setup emscripten sdk
+        uses: mymindstorm/setup-emsdk@v10
+
+      - name: Install emscripten rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
-          target: wasm32-wasi
+          toolchain: stable
+          target: wasm32-unknown-emscripten
       - name: Install cross
         run: cargo install cross
       - name: Compile native lib for wasm
@@ -303,20 +251,19 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --manifest-path native/src/Cargo.toml --target wasm32-wasi -v
+          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten -v
         env:
-          #CC: /wasi-sdk-12.0/bin/clang
-          RUSTFLAGS: -C relocation-model=pic -C link-arg=-shared -C link-arg=--experimental-pic
-          C_INCLUDE_PATH: /wasi-sdk-12.0/share/wasi-sysroot/include
-          #CARGO_TARGET_WASM32_WASI_LINKER: /wasi-sdk-12.0/bin/lld
+          # CC: emcc
+          # RUSTFLAGS: -C link-arg=-fno-exceptions -C link-arg=-s -C link-arg=DISABLE_EXCEPTION_CATCHING=1
+          # RUSTFLAGS: -C relocation-model=pic --emit=obj
+          # EMMAKEN_CFLAGS: -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASSERTIONS=1 -g -gsource-map -fPIC --shared --import-memory --export-all --allow-undefined # -s SIDE_MODULE=1
+          C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
           CARGO_TARGET_DIR: native/target
-          CARGO_RUST_LLD: true
-          
       - name: DEBUG
         run: |
           wget -nc https://github.com/WebAssembly/wabt/releases/download/1.0.23/wabt-1.0.23-ubuntu.tar.gz
           tar xvf wabt-1.0.23-ubuntu.tar.gz
-          wabt-1.0.23/bin/wasm-objdump -x native/target/wasm32-wasi/debug/godot_rs_keepass.wasm
+          wabt-1.0.23/bin/wasm-objdump -x native/target/wasm32-unknown-emscripten/debug/godot_rs_keepass.wasm
       - name: Build
         run: |
           mkdir -v -p exports/web
@@ -327,3 +274,60 @@ jobs:
           name: HTML5
           path: exports/web
           retention-days: 14
+          
+          
+  # export-html:
+    # name: HTML5 export
+    # runs-on: ubuntu-latest
+    # container:
+      # image: barichello/godot-ci:3.3
+    # steps:
+      # - name: Checkout
+        # uses: actions/checkout@v2
+      # - name: Setup godot templates
+        # run: |
+          # mkdir -v -p ~/.local/share/godot/templates
+          # mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+
+      # - name: Install build essentials
+        # run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
+      # - name: Get Wasi toolchain
+        # run: |
+          # wget -nc https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-12/wasi-sdk-12.0-linux.tar.gz
+          # tar xvf wasi-sdk-12.0-linux.tar.gz -C /
+      # - name: Install wasm32 rust toolchain
+        # uses: actions-rs/toolchain@v1
+        # with:
+          # toolchain: nightly
+          # target: wasm32-wasi
+      # - name: Install cross
+        # run: cargo install cross
+      # - name: Compile native lib for wasm
+        # uses: actions-rs/cargo@v1
+        # with:
+          # use-cross: true
+          # command: build
+          # args: --manifest-path native/src/Cargo.toml --target wasm32-wasi -v
+        # env:
+          # CC: /wasi-sdk-12.0/bin/clang
+          # RUSTFLAGS: -C relocation-model=pic -C link-arg=-shared -C link-arg=--experimental-pic
+          # C_INCLUDE_PATH: /wasi-sdk-12.0/share/wasi-sysroot/include
+          # CARGO_TARGET_WASM32_WASI_LINKER: /wasi-sdk-12.0/bin/lld
+          # CARGO_TARGET_DIR: native/target
+          # CARGO_RUST_LLD: true
+          
+      # - name: DEBUG
+        # run: |
+          # wget -nc https://github.com/WebAssembly/wabt/releases/download/1.0.23/wabt-1.0.23-ubuntu.tar.gz
+          # tar xvf wabt-1.0.23-ubuntu.tar.gz
+          # wabt-1.0.23/bin/wasm-objdump -x native/target/wasm32-wasi/debug/godot_rs_keepass.wasm
+      # - name: Build
+        # run: |
+          # mkdir -v -p exports/web
+          # godot -v --export-debug "HTML5" exports/web/${EXPORT_NAME}.html
+      # - name: Upload Artifact
+        # uses: actions/upload-artifact@v2
+        # with:
+          # name: HTML5
+          # path: exports/web
+          # retention-days: 14
