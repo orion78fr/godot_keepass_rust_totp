@@ -261,7 +261,7 @@ jobs:
           EMMAKEN_CFLAGS: -s SIDE_MODULE=1 -shared
           C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
           CARGO_TARGET_DIR: native/target
-          CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_LINKER: ${{GITHUB_WORKSPACE}}/emcc-test/emcc-test 
+          CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_LINKER: ${{github.workspace}}/emcc-test/emcc-test 
       - name: DEBUG
         run: |
           wget -nc https://github.com/WebAssembly/wabt/releases/download/1.0.23/wabt-1.0.23-ubuntu.tar.gz
