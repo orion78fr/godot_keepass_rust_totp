@@ -4,18 +4,18 @@ arr=()
 
 for f in "$@"; do
     if [[ "$f" == *.rlib ]]; then
-        echo Extracting $f
+        #echo Extracting $f
         
         ar --output "$(dirname $f)" -x $f
         
         ar -t $f | grep .o | while read o; do
             fo=$(dirname $f)/$o
             
-            echo File $fo
+            #echo File $fo
             arr+=("$fo")
         done
     else
-        echo Passing arg $f
+        #echo Passing arg $f
         arr+=("$f")
     fi
 done
