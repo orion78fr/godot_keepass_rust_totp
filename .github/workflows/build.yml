@@ -250,7 +250,7 @@ jobs:
       - name: Compile native lib for wasm
         uses: actions-rs/cargo@v1
         with:
-          use-cross: true
+          use-cross: false
           command: build
           args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release
         env:
