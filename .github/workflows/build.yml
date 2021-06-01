@@ -253,7 +253,7 @@ jobs:
           args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release
         env:
           RUSTFLAGS: -C link-args=-fPIC -C relocation-model=pic
-          EMMAKEN_CFLAGS: -Wl,--shared-memory,--no-check-features -s SIDE_MODULE=1 -shared
+          EMMAKEN_CFLAGS: -s SIDE_MODULE=1 -shared -Wl,--no-check-features -all
           C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
           CARGO_TARGET_DIR: native/target
           # Optimize for size
