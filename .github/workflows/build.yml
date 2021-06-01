@@ -233,6 +233,8 @@ jobs:
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang python3 xz-utils
       - name: Setup emscripten sdk
         uses: mymindstorm/setup-emsdk@v10
+        with:
+          version: d5b212dd0c185d2cba6b08115c29228bdc4c38a8
       - name: HACK - Add an option to wasm-opt
         run: |
           mv ${{env.EMSDK}}/upstream/bin/wasm-opt ${{env.EMSDK}}/upstream/bin/wasm-opt-bak
