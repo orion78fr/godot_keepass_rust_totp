@@ -109,7 +109,6 @@ jobs:
           target: x86_64-apple-darwin
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang cmake libxml2-dev libz-dev libssl-dev
-
       - name: Clone osxcross
         uses: actions/checkout@v2
         with:
@@ -123,7 +122,6 @@ jobs:
           TARGET_DIR: /osxcross
           OSX_VERSION_MIN: 10.7
           UNATTENDED: yes
-
       - name: Compile native lib for mac
         uses: actions-rs/cargo@v1
         with:
@@ -136,7 +134,6 @@ jobs:
           C_INCLUDE_PATH: /osxcross/SDK/MacOSX10.10.sdk/usr/include
           CARGO_TARGET_X86_64_APPLE_DARWIN_LINKER: /osxcross/bin/x86_64-apple-darwin14-cc
           CARGO_TARGET_DIR: native/target
-      
       - name: Build
         run: |
           mkdir -v -p exports/mac
@@ -184,7 +181,6 @@ jobs:
           target: x86_64-linux-android 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev g++-multilib gcc-multilib libc6-dev libc6-dev-arm64-cross
-          
       - name: Compile native lib for aarch64 android
         uses: actions-rs/cargo@v1
         with:
@@ -233,12 +229,12 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
-
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang python3 xz-utils
       - name: Setup emscripten sdk
         uses: mymindstorm/setup-emsdk@v10
-
+      - name: HACK - Add an option to wasm-opt
+        run: wo=$(which wasm-opt) mv $wo $wo-bak && cp emcc-test/wasm-opt $wo
       - name: Install emscripten rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -253,9 +249,6 @@ jobs:
           command: build
           args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release
         env:
-          # CC: emcc
-          # RUSTFLAGS: -C link-arg=-fno-exceptions -C link-arg=-s -C link-arg=DISABLE_EXCEPTION_CATCHING=1
-          # EMMAKEN_CFLAGS: -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASSERTIONS=1 -g -gsource-map -fPIC --shared --import-memory --export-all --allow-undefined # -s SIDE_MODULE=1
           RUSTFLAGS: -C link-args=-fPIC -C relocation-model=pic
           EMMAKEN_CFLAGS: -Wl,--shared-memory,--no-check-features -s SIDE_MODULE=1 -shared
           C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
@@ -269,8 +262,7 @@ jobs:
           CARGO_PROFILE_RELEASE_LTO: true
           # Don't unwind the stack
           CARGO_PROFILE_RELEASE_PANIC: abort
-          
-          # Use my wrapper
+          # Use my wrapper to extract the rlib
           CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_LINKER: ${{github.workspace}}/emcc-test/emcc-test
       - name: DEBUG
         run: |
