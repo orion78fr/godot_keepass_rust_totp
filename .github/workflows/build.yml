@@ -258,7 +258,7 @@ jobs:
           # RUSTFLAGS: -C relocation-model=pic --emit=obj
           # EMMAKEN_CFLAGS: -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASSERTIONS=1 -g -gsource-map -fPIC --shared --import-memory --export-all --allow-undefined # -s SIDE_MODULE=1
           RUSTFLAGS: -C link-args=-fPIC -C relocation-model=pic
-          EMMAKEN_CFLAGS: --no-check-features -s SIDE_MODULE=1 -shared
+          EMMAKEN_CFLAGS: -Wl,--no-check-features -s SIDE_MODULE=1 -shared
           C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
           CARGO_TARGET_DIR: native/target
           CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_LINKER: ${{github.workspace}}/emcc-test/emcc-test 
