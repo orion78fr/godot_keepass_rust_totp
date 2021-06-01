@@ -234,7 +234,7 @@ jobs:
       - name: Setup emscripten sdk
         uses: mymindstorm/setup-emsdk@v10
       - name: HACK - Add an option to wasm-opt
-        run: wo=$(which wasm-opt) mv $wo $wo-bak && cp emcc-test/wasm-opt $wo
+        run: wo=$(which wasm-opt) && mv $wo $wo-bak && cp emcc-test/wasm-opt $wo
       - name: Install emscripten rust toolchain
         uses: actions-rs/toolchain@v1
         with:
