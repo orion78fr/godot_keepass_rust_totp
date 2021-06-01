@@ -1,2 +1,2 @@
 #!/bin/bash
-./wasm-opt-bak $@ -all
+$EMSDK/upstream/bin/wasm-opt-bak $@ -all
