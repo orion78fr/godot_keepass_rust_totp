@@ -251,17 +251,19 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten
+          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release
         env:
           # CC: emcc
           # RUSTFLAGS: -C link-arg=-fno-exceptions -C link-arg=-s -C link-arg=DISABLE_EXCEPTION_CATCHING=1
-          # RUSTFLAGS: -C relocation-model=pic --emit=obj
           # EMMAKEN_CFLAGS: -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASSERTIONS=1 -g -gsource-map -fPIC --shared --import-memory --export-all --allow-undefined # -s SIDE_MODULE=1
           RUSTFLAGS: -C link-args=-fPIC -C relocation-model=pic
-          EMMAKEN_CFLAGS: -Wl,--shared-memory,--no-check-features -s SIDE_MODULE=1 -shared -O0
+          EMMAKEN_CFLAGS: -Wl,--shared-memory,--no-check-features -s SIDE_MODULE=1 -shared
           C_INCLUDE_PATH: ${{env.EMSDK}}/upstream/emscripten/cache/sysroot/include/
           CARGO_TARGET_DIR: native/target
-          CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_LINKER: ${{github.workspace}}/emcc-test/emcc-test 
+          # Optimize for size
+          CARGO_PROFILE_RELEASE_OPT_LEVEL: s
+          # Use my wrapper
+          CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_LINKER: ${{github.workspace}}/emcc-test/emcc-test
       - name: DEBUG
         run: |
           wget -nc https://github.com/WebAssembly/wabt/releases/download/1.0.23/wabt-1.0.23-ubuntu.tar.gz

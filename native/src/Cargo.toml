@@ -12,4 +12,5 @@ crate-type = ["cdylib"]
 
 [profile.release]
 debug = true
+opt-level = 3
 split-debuginfo = "off"
