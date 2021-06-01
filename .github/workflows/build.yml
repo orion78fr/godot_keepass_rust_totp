@@ -262,6 +262,14 @@ jobs:
           CARGO_TARGET_DIR: native/target
           # Optimize for size
           CARGO_PROFILE_RELEASE_OPT_LEVEL: s
+          # No overflow check / assertions
+          CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS: false
+          CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS: false
+          # Link time optimisations (to reduce size)
+          CARGO_PROFILE_RELEASE_LTO: true
+          # Don't unwind the stack
+          CARGO_PROFILE_RELEASE_PANIC: abort
+          
           # Use my wrapper
           CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_LINKER: ${{github.workspace}}/emcc-test/emcc-test
       - name: DEBUG
