@@ -27,7 +27,7 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
-          
+
       - name: Install windows rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -209,18 +209,11 @@ jobs:
             ${{runner.os}}-android-${{env.ANDROID_BUILD_TOOLS_VERSION}}-
             ${{runner.os}}-android-
       - name: Setup Android SDK
-        if: steps.android-cache.outputs.cache-hit != 'true'
         uses: android-actions/setup-android@v2
       - name: Install Android build tools
-        if: steps.android-cache.outputs.cache-hit != 'true'
         run: |
           sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
           sdkmanager "ndk;${ANDROID_NDK_VERSION}"
-      - name: Export the android vars
-        if: steps.android-cache.outputs.cache-hit == 'true'
-        run: |
-          echo "ANDROID_SDK_ROOT=$HOME/.android" >> $GITHUB_ENV
-          echo "ANDROID_HOME=$HOME/.android" >> $GITHUB_ENV
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev g++-multilib gcc-multilib libc6-dev libc6-dev-arm64-cross
