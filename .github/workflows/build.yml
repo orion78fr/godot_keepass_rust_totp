@@ -244,6 +244,11 @@ jobs:
         run: |
           sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
           sdkmanager "ndk;${ANDROID_NDK_VERSION}"
+      - name: Export the vars
+        if: steps.android-cache.outputs.cache-hit == 'true'
+        run: |
+          echo "ANDROID_SDK_ROOT=~/.android" >> $GITHUB_ENV
+          echo "ANDROID_HOME=~/.android" >> $GITHUB_ENV
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev g++-multilib gcc-multilib libc6-dev libc6-dev-arm64-cross
