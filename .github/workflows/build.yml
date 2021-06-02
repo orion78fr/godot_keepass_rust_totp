@@ -41,6 +41,10 @@ jobs:
         with:
           toolchain: stable
           target: x86_64-pc-windows-gnu
+      - name: Export the rust vars
+        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
+        run: |
+          echo "source $HOME/.cargo/env" >> $GITHUB_ENV
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev mingw-w64
@@ -91,6 +95,10 @@ jobs:
         with:
           toolchain: stable
           target: x86_64-unknown-linux-gnu
+      - name: Export the rust vars
+        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
+        run: |
+          echo "source $HOME/.cargo/env" >> $GITHUB_ENV
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
@@ -139,6 +147,10 @@ jobs:
         with:
           toolchain: stable
           target: x86_64-apple-darwin
+      - name: Export the rust vars
+        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
+        run: |
+          echo "source $HOME/.cargo/env" >> $GITHUB_ENV
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang cmake libxml2-dev libz-dev libssl-dev
@@ -221,6 +233,10 @@ jobs:
         with:
           toolchain: stable
           target: x86_64-linux-android
+      - name: Export the rust vars
+        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
+        run: |
+          echo "source echo "source $HOME/.cargo/env" >> $GITHUB_ENV
 
       - name: Setup JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v1
@@ -244,7 +260,7 @@ jobs:
         run: |
           sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
           sdkmanager "ndk;${ANDROID_NDK_VERSION}"
-      - name: Export the vars
+      - name: Export the android vars
         if: steps.android-cache.outputs.cache-hit == 'true'
         run: |
           echo "ANDROID_SDK_ROOT=~/.android" >> $GITHUB_ENV
@@ -313,6 +329,10 @@ jobs:
         with:
           toolchain: stable
           target: wasm32-unknown-emscripten
+      - name: Export the rust vars
+        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
+        run: |
+          echo "source $HOME/.cargo/env" >> $GITHUB_ENV
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang python3 xz-utils
