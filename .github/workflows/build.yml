@@ -27,19 +27,24 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+
       - name: Cache rust toolchain and packages
+        id: rust-toolchain-cache
         uses: actions/cache@v2
         with:
           path: ~/.cargo
-          key: ${{runner.os}}-rust-toolchain-${{hashFiles('**/Cargo.toml')}}
-          restore-keys: ${{runner.os}}-rust-toolchain-
+          key: ${{runner.os}}-rust-toolchain-windows-${{hashFiles('**/Cargo.toml')}}
+          restore-keys: ${{runner.os}}-rust-toolchain-windows-
       - name: Install windows rust toolchain
+        if: steps.rust-toolchain-cache.outputs.cache-hit != 'true'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           target: x86_64-pc-windows-gnu
+
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev mingw-w64
+
       - name: Compile native lib for windows
         uses: actions-rs/cargo@v1
         with:
@@ -72,19 +77,24 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+
       - name: Cache rust toolchain and packages
+        id: rust-toolchain-cache
         uses: actions/cache@v2
         with:
           path: ~/.cargo
-          key: ${{runner.os}}-rust-toolchain-${{hashFiles('**/Cargo.toml')}}
-          restore-keys: ${{runner.os}}-rust-toolchain-
+          key: ${{runner.os}}-rust-toolchain-linux-${{hashFiles('**/Cargo.toml')}}
+          restore-keys: ${{runner.os}}-rust-toolchain-linux-
       - name: Install linux rust toolchain
+        if: steps.rust-toolchain-cache.outputs.cache-hit != 'true'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           target: x86_64-unknown-linux-gnu
+
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
+
       - name: Compile native lib for linux
         uses: actions-rs/cargo@v1
         with:
@@ -115,19 +125,24 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+
       - name: Cache rust toolchain and packages
+        id: rust-toolchain-cache
         uses: actions/cache@v2
         with:
           path: ~/.cargo
-          key: ${{runner.os}}-rust-toolchain-${{hashFiles('**/Cargo.toml')}}
-          restore-keys: ${{runner.os}}-rust-toolchain-
+          key: ${{runner.os}}-rust-toolchain-macosx-${{hashFiles('**/Cargo.toml')}}
+          restore-keys: ${{runner.os}}-rust-toolchain-macosx-
       - name: Install mac rust toolchain
+        if: steps.rust-toolchain-cache.outputs.cache-hit != 'true'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           target: x86_64-apple-darwin
+
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang cmake libxml2-dev libz-dev libssl-dev
+
       - name: Cache osxcross
         id: osxcross-cache
         uses: actions/cache@v2
@@ -151,6 +166,7 @@ jobs:
           TARGET_DIR: /osxcross
           OSX_VERSION_MIN: 10.7
           UNATTENDED: yes
+
       - name: Compile native lib for mac
         uses: actions-rs/cargo@v1
         with:
@@ -185,13 +201,34 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+
       - name: Cache rust toolchain and packages
+        id: rust-toolchain-cache
         uses: actions/cache@v2
         with:
           path: ~/.cargo
-          key: ${{runner.os}}-rust-toolchain-${{hashFiles('**/Cargo.toml')}}
-          restore-keys: ${{runner.os}}-rust-toolchain-
+          key: ${{runner.os}}-rust-toolchain-android-${{hashFiles('**/Cargo.toml')}}
+          restore-keys: ${{runner.os}}-rust-toolchain-android-
+      - name: Install aarch64 android rust toolchain
+        if: steps.rust-toolchain-cache.outputs.cache-hit != 'true'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: aarch64-linux-android
+      - name: Install x86_64 android rust toolchain
+        if: steps.rust-toolchain-cache.outputs.cache-hit != 'true'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: x86_64-linux-android
+
+      - name: Setup JDK ${{env.JAVA_VERSION}}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{env.JAVA_VERSION}}
+
       - name: Cache android toolchain and packages
+        id: android-cache
         uses: actions/cache@v2
         with:
           path: ~/.android
@@ -199,28 +236,18 @@ jobs:
           restore-keys: |
             ${{runner.os}}-android-${{env.ANDROID_BUILD_TOOLS_VERSION}}-
             ${{runner.os}}-android-
-      - name: Setup JDK ${{env.JAVA_VERSION}}
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{env.JAVA_VERSION}}
       - name: Setup Android SDK
+        if: steps.android-cache.outputs.cache-hit != 'true'
         uses: android-actions/setup-android@v2
       - name: Install Android build tools
+        if: steps.android-cache.outputs.cache-hit != 'true'
         run: |
           sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
           sdkmanager "ndk;${ANDROID_NDK_VERSION}"
-      - name: Install aarch64 android rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: aarch64-linux-android
-      - name: Install x86_64 android rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: x86_64-linux-android 
+
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev g++-multilib gcc-multilib libc6-dev libc6-dev-arm64-cross
+
       - name: Compile native lib for aarch64 android
         uses: actions-rs/cargo@v1
         with:
@@ -267,14 +294,24 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+
       - name: Cache rust toolchain and packages
+        id: rust-toolchain-cache
         uses: actions/cache@v2
         with:
           path: ~/.cargo
-          key: ${{runner.os}}-rust-toolchain-${{hashFiles('**/Cargo.toml')}}
-          restore-keys: ${{runner.os}}-rust-toolchain-
+          key: ${{runner.os}}-rust-toolchain-html5-${{hashFiles('**/Cargo.toml')}}
+          restore-keys: ${{runner.os}}-rust-toolchain-html5-
+      - name: Install emscripten rust toolchain
+        if: steps.rust-toolchain-cache.outputs.cache-hit != 'true'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-emscripten
+
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang python3 xz-utils
+
       - name: Setup emscripten sdk
         uses: mymindstorm/setup-emsdk@v10
         with:
@@ -284,11 +321,7 @@ jobs:
           mv ${{env.EMSDK}}/upstream/bin/wasm-opt ${{env.EMSDK}}/upstream/bin/wasm-opt-bak
           chmod +x emcc-test/wasm-opt
           cp emcc-test/wasm-opt ${{env.EMSDK}}/upstream/bin/wasm-opt
-      - name: Install emscripten rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: wasm32-unknown-emscripten
+
       - name: Compile native lib for wasm
         uses: actions-rs/cargo@v1
         with:
@@ -310,11 +343,13 @@ jobs:
           CARGO_PROFILE_RELEASE_PANIC: abort
           # Use my wrapper to extract the rlib
           CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_LINKER: ${{github.workspace}}/emcc-test/emcc-test
-      - name: DEBUG
-        run: |
-          wget -nc https://github.com/WebAssembly/wabt/releases/download/1.0.23/wabt-1.0.23-ubuntu.tar.gz
-          tar xvf wabt-1.0.23-ubuntu.tar.gz
-          wabt-1.0.23/bin/wasm-objdump -x native/target/wasm32-unknown-emscripten/release/godot_rs_keepass.wasm
+
+      # - name: DEBUG
+        # run: |
+          # wget -nc https://github.com/WebAssembly/wabt/releases/download/1.0.23/wabt-1.0.23-ubuntu.tar.gz
+          # tar xvf wabt-1.0.23-ubuntu.tar.gz
+          # wabt-1.0.23/bin/wasm-objdump -x native/target/wasm32-unknown-emscripten/release/godot_rs_keepass.wasm
+
       - name: Build
         run: |
           mkdir -v -p exports/web
