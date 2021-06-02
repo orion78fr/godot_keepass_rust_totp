@@ -27,26 +27,13 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
-
-      - name: Cache rust toolchain and packages
-        id: rust-toolchain-cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cargo
-          key: ${{runner.os}}-rust-toolchain-windows-${{hashFiles('**/Cargo.toml')}}
-          restore-keys: ${{runner.os}}-rust-toolchain-windows-
+          
       - name: Install windows rust toolchain
-        if: steps.rust-toolchain-cache.outputs.cache-hit != 'true'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           target: x86_64-pc-windows-gnu
-      - name: Add rust to path
-        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-      - name: Set default rust toolchain
-        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: rustup default stable
+          profile: minimal
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev mingw-w64
@@ -84,25 +71,12 @@ jobs:
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
 
-      - name: Cache rust toolchain and packages
-        id: rust-toolchain-cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cargo
-          key: ${{runner.os}}-rust-toolchain-linux-${{hashFiles('**/Cargo.toml')}}
-          restore-keys: ${{runner.os}}-rust-toolchain-linux-
       - name: Install linux rust toolchain
-        if: steps.rust-toolchain-cache.outputs.cache-hit != 'true'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           target: x86_64-unknown-linux-gnu
-      - name: Add rust to path
-        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-      - name: Set default rust toolchain
-        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: rustup default stable
+          profile: minimal
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
@@ -138,25 +112,12 @@ jobs:
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
 
-      - name: Cache rust toolchain and packages
-        id: rust-toolchain-cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cargo
-          key: ${{runner.os}}-rust-toolchain-macosx-${{hashFiles('**/Cargo.toml')}}
-          restore-keys: ${{runner.os}}-rust-toolchain-macosx-
       - name: Install mac rust toolchain
-        if: steps.rust-toolchain-cache.outputs.cache-hit != 'true'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           target: x86_64-apple-darwin
-      - name: Add rust to path
-        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-      - name: Set default rust toolchain
-        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: rustup default stable
+          profile: minimal
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang cmake libxml2-dev libz-dev libssl-dev
@@ -220,31 +181,18 @@ jobs:
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
 
-      - name: Cache rust toolchain and packages
-        id: rust-toolchain-cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cargo
-          key: ${{runner.os}}-rust-toolchain-android-${{hashFiles('**/Cargo.toml')}}
-          restore-keys: ${{runner.os}}-rust-toolchain-android-
       - name: Install aarch64 android rust toolchain
-        if: steps.rust-toolchain-cache.outputs.cache-hit != 'true'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           target: aarch64-linux-android
+          profile: minimal
       - name: Install x86_64 android rust toolchain
-        if: steps.rust-toolchain-cache.outputs.cache-hit != 'true'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           target: x86_64-linux-android
-      - name: Add rust to path
-        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-      - name: Set default rust toolchain
-        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: rustup default stable
+          profile: minimal
 
       - name: Setup JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v1
@@ -324,22 +272,12 @@ jobs:
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
 
-      - name: Cache rust toolchain and packages
-        id: rust-toolchain-cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cargo
-          key: ${{runner.os}}-rust-toolchain-html5-${{hashFiles('**/Cargo.toml')}}
-          restore-keys: ${{runner.os}}-rust-toolchain-html5-
       - name: Install emscripten rust toolchain
-        if: steps.rust-toolchain-cache.outputs.cache-hit != 'true'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           target: wasm32-unknown-emscripten
-      - name: Add rust to path
-        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          profile: minimal
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang python3 xz-utils
