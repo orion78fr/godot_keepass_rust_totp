@@ -10,6 +10,9 @@ env:
   ANDROID_NDK_VERSION: 22.1.7171670
   ANDROID_BUILD_TOOLS_VERSION: 30.0.3
   MACOS_SDK_TAR: https://s3.dockerproject.org/darwin/v2/MacOSX10.10.sdk.tar.xz
+  MACOS_SDK_VERSION: 10.10
+  MACOS_OSXCROSS_VERSION: 8a716a43a72dab1db9630d7824ee0af3730cb8f9
+  EMSDK_VERSION: 2.0.17
 
 jobs:
   export-win:
@@ -24,6 +27,12 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+      - name: Cache rust toolchain and packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo
+          key: ${{runner.os}}-rust-toolchain-${{hashFiles('**/Cargo.toml')}}
+          restore-keys: ${{runner.os}}-rust-toolchain-
       - name: Install windows rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -34,7 +43,6 @@ jobs:
       - name: Compile native lib for windows
         uses: actions-rs/cargo@v1
         with:
-          use-cross: true
           command: build
           args: --manifest-path native/src/Cargo.toml --target x86_64-pc-windows-gnu --release
         env:
@@ -64,6 +72,12 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+      - name: Cache rust toolchain and packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo
+          key: ${{runner.os}}-rust-toolchain-${{hashFiles('**/Cargo.toml')}}
+          restore-keys: ${{runner.os}}-rust-toolchain-
       - name: Install linux rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -74,7 +88,6 @@ jobs:
       - name: Compile native lib for linux
         uses: actions-rs/cargo@v1
         with:
-          use-cross: true
           command: build
           args: --manifest-path native/src/Cargo.toml --target x86_64-unknown-linux-gnu --release
         env:
@@ -102,6 +115,12 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+      - name: Cache rust toolchain and packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo
+          key: ${{runner.os}}-rust-toolchain-${{hashFiles('**/Cargo.toml')}}
+          restore-keys: ${{runner.os}}-rust-toolchain-
       - name: Install mac rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -109,14 +128,24 @@ jobs:
           target: x86_64-apple-darwin
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang cmake libxml2-dev libz-dev libssl-dev
+      - name: Cache osxcross
+        id: osxcross-cache
+        uses: actions/cache@v2
+        with:
+          path: /osxcross
+          key: ${{runner.os}}-osxcross-${{env.MACOS_SDK_VERSION}}-${{env.MACOS_OSXCROSS_VERSION}}
       - name: Clone osxcross
+        if: steps.osxcross-cache.outputs.cache-hit != 'true'
         uses: actions/checkout@v2
         with:
           repository: 'tpoechtrager/osxcross'
           path: './osxcross'
+          ref: ${{env.MACOS_OSXCROSS_VERSION}}
       - name: Get Macos SDK
+        if: steps.osxcross-cache.outputs.cache-hit != 'true'
         run: wget -P osxcross/tarballs/ -nc ${{env.MACOS_SDK_TAR}}
       - name: Setup cross compiler
+        if: steps.osxcross-cache.outputs.cache-hit != 'true'
         run: ./osxcross/build.sh
         env:
           TARGET_DIR: /osxcross
@@ -125,7 +154,6 @@ jobs:
       - name: Compile native lib for mac
         uses: actions-rs/cargo@v1
         with:
-          use-cross: true
           command: build
           args: --manifest-path native/src/Cargo.toml --target x86_64-apple-darwin --release
         env:
@@ -157,7 +185,20 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
-          
+      - name: Cache rust toolchain and packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo
+          key: ${{runner.os}}-rust-toolchain-${{hashFiles('**/Cargo.toml')}}
+          restore-keys: ${{runner.os}}-rust-toolchain-
+      - name: Cache android toolchain and packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.android
+          key: ${{runner.os}}-android-${{env.ANDROID_BUILD_TOOLS_VERSION}}-${{env.ANDROID_NDK_VERSION}}
+          restore-keys: |
+            ${{runner.os}}-android-${{env.ANDROID_BUILD_TOOLS_VERSION}}-
+            ${{runner.os}}-android-
       - name: Setup JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v1
         with:
@@ -168,7 +209,6 @@ jobs:
         run: |
           sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
           sdkmanager "ndk;${ANDROID_NDK_VERSION}"
-          
       - name: Install aarch64 android rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -184,7 +224,6 @@ jobs:
       - name: Compile native lib for aarch64 android
         uses: actions-rs/cargo@v1
         with:
-          use-cross: true
           command: build
           args: --manifest-path native/src/Cargo.toml --target aarch64-linux-android --release
         env:
@@ -193,7 +232,6 @@ jobs:
       - name: Compile native lib for x86_64 android
         uses: actions-rs/cargo@v1
         with:
-          use-cross: true
           command: build
           args: --manifest-path native/src/Cargo.toml --target x86_64-linux-android --release
         env:
@@ -229,12 +267,18 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+      - name: Cache rust toolchain and packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo
+          key: ${{runner.os}}-rust-toolchain-${{hashFiles('**/Cargo.toml')}}
+          restore-keys: ${{runner.os}}-rust-toolchain-
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang python3 xz-utils
       - name: Setup emscripten sdk
         uses: mymindstorm/setup-emsdk@v10
         with:
-          version: 2.0.17
+          version: ${{env.EMSDK_VERSION}}
       - name: HACK - Add an option to wasm-opt
         run: |
           mv ${{env.EMSDK}}/upstream/bin/wasm-opt ${{env.EMSDK}}/upstream/bin/wasm-opt-bak
@@ -248,7 +292,6 @@ jobs:
       - name: Compile native lib for wasm
         uses: actions-rs/cargo@v1
         with:
-          use-cross: false
           command: build
           args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release
         env:
@@ -282,60 +325,3 @@ jobs:
           name: HTML5
           path: exports/web
           retention-days: 14
-          
-          
-  # export-html:
-    # name: HTML5 export
-    # runs-on: ubuntu-latest
-    # container:
-      # image: barichello/godot-ci:3.3
-    # steps:
-      # - name: Checkout
-        # uses: actions/checkout@v2
-      # - name: Setup godot templates
-        # run: |
-          # mkdir -v -p ~/.local/share/godot/templates
-          # mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
-
-      # - name: Install build essentials
-        # run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
-      # - name: Get Wasi toolchain
-        # run: |
-          # wget -nc https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-12/wasi-sdk-12.0-linux.tar.gz
-          # tar xvf wasi-sdk-12.0-linux.tar.gz -C /
-      # - name: Install wasm32 rust toolchain
-        # uses: actions-rs/toolchain@v1
-        # with:
-          # toolchain: nightly
-          # target: wasm32-wasi
-      # - name: Install cross
-        # run: cargo install cross
-      # - name: Compile native lib for wasm
-        # uses: actions-rs/cargo@v1
-        # with:
-          # use-cross: true
-          # command: build
-          # args: --manifest-path native/src/Cargo.toml --target wasm32-wasi -v
-        # env:
-          # CC: /wasi-sdk-12.0/bin/clang
-          # RUSTFLAGS: -C relocation-model=pic -C link-arg=-shared -C link-arg=--experimental-pic
-          # C_INCLUDE_PATH: /wasi-sdk-12.0/share/wasi-sysroot/include
-          # CARGO_TARGET_WASM32_WASI_LINKER: /wasi-sdk-12.0/bin/lld
-          # CARGO_TARGET_DIR: native/target
-          # CARGO_RUST_LLD: true
-          
-      # - name: DEBUG
-        # run: |
-          # wget -nc https://github.com/WebAssembly/wabt/releases/download/1.0.23/wabt-1.0.23-ubuntu.tar.gz
-          # tar xvf wabt-1.0.23-ubuntu.tar.gz
-          # wabt-1.0.23/bin/wasm-objdump -x native/target/wasm32-wasi/debug/godot_rs_keepass.wasm
-      # - name: Build
-        # run: |
-          # mkdir -v -p exports/web
-          # godot -v --export-debug "HTML5" exports/web/${EXPORT_NAME}.html
-      # - name: Upload Artifact
-        # uses: actions/upload-artifact@v2
-        # with:
-          # name: HTML5
-          # path: exports/web
-          # retention-days: 14
