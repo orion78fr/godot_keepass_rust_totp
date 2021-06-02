@@ -41,10 +41,12 @@ jobs:
         with:
           toolchain: stable
           target: x86_64-pc-windows-gnu
-      - name: Export the rust vars
+      - name: Add rust to path
         if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: |
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Set default rust toolchain
+        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
+        run: rustup default stable
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang llvm-dev libclang-dev mingw-w64
@@ -95,10 +97,12 @@ jobs:
         with:
           toolchain: stable
           target: x86_64-unknown-linux-gnu
-      - name: Export the rust vars
+      - name: Add rust to path
         if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: |
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Set default rust toolchain
+        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
+        run: rustup default stable
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang
@@ -147,10 +151,12 @@ jobs:
         with:
           toolchain: stable
           target: x86_64-apple-darwin
-      - name: Export the rust vars
+      - name: Add rust to path
         if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: |
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Set default rust toolchain
+        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
+        run: rustup default stable
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang cmake libxml2-dev libz-dev libssl-dev
@@ -233,10 +239,12 @@ jobs:
         with:
           toolchain: stable
           target: x86_64-linux-android
-      - name: Export the rust vars
+      - name: Add rust to path
         if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: |
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Set default rust toolchain
+        if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
+        run: rustup default stable
 
       - name: Setup JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v1
@@ -329,10 +337,9 @@ jobs:
         with:
           toolchain: stable
           target: wasm32-unknown-emscripten
-      - name: Export the rust vars
+      - name: Add rust to path
         if: steps.rust-toolchain-cache.outputs.cache-hit == 'true'
-        run: |
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install build essentials
         run: apt-get update && apt-get install -y --no-install-recommends build-essential clang python3 xz-utils
