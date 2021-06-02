@@ -245,8 +245,6 @@ jobs:
         with:
           toolchain: stable
           target: wasm32-unknown-emscripten
-      - name: Install cross
-        run: cargo install cross
       - name: Compile native lib for wasm
         uses: actions-rs/cargo@v1
         with:
