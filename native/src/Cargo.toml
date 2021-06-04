@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 gdnative = "0.9.3"
+keepass = "0.4.8"
 
 [lib]
 crate-type = ["cdylib"]
