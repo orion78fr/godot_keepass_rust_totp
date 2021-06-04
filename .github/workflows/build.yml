@@ -288,7 +288,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release
+          args: --manifest-path native/src/Cargo.toml --target wasm32-unknown-emscripten --release --cfg "target_family=wasm"
         env:
           RUSTFLAGS: -C link-args=-fPIC -C relocation-model=pic
           EMMAKEN_CFLAGS: -s SIDE_MODULE=1 -shared -Wl,--no-check-features -all
