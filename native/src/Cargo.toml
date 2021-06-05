@@ -16,3 +16,7 @@ crate-type = ["cdylib"]
 debug = true
 opt-level = 3
 split-debuginfo = "off"
+
+# Try to patch the chrono compile bug for wasm target
+[patch.crates-io]
+chrono = { git = 'https://github.com/orion78fr/chrono' }
