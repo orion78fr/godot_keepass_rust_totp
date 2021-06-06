@@ -1,10 +1,9 @@
 use gdnative::prelude::*;
-use gdnative::api::{Reference};
+use gdnative::api::{Reference, File};
 use keepass::{Database, Group};
-use std::fs::File;
-use std::path::Path;
 use keepass::Value::{Bytes, Unprotected, Protected};
 use std::str::from_utf8;
+use std::io::{ErrorKind, Error, Write};
 
 #[derive(NativeClass)]
 #[inherit(Reference)]
@@ -19,25 +18,40 @@ impl KeepassTotp {
     fn test(&self, _owner: TRef<Reference>) -> String {
         "Hello World from Rust !".to_string()
     }
+
     #[export]
-    fn open_keepass_db(&self, _owner: TRef<Reference>, db_path: String, pwd: Option<String>) -> () {
+    fn open_keepass_db(&self, _owner: TRef<Reference>, db_path: GodotString, pwd: Option<String>) -> () {
         let db = open_db(db_path, pwd).unwrap();
 
         iterate_group(&db.root);
     }
+}
 
+struct FileWrapper(Ref<gdnative::api::File, Unique>);
 
+impl std::io::Read for FileWrapper {
+    fn read(&mut self, mut buf: &mut[u8]) -> std::io::Result<usize> {
+        let read_size : i64 = std::cmp::min(buf.len() as i64,
+                                            self.0.get_len() - self.0.get_position());
+
+        let b = self.0.as_ref().get_buffer(read_size);
+        let res = buf.write(b.read().as_slice());
+        res
+    }
 }
 
 fn init(handle: InitHandle) {
     handle.add_class::<KeepassTotp>();
 }
 
-fn open_db(path: String, pwd: Option<String>) -> keepass::Result<Database> {
+fn open_db(path: GodotString, pwd: Option<String>) -> keepass::Result<Database> {
+    let f = File::new();
+    f.open(path, File::READ).unwrap();
+
     Database::open(
-        &mut File::open(Path::new(&path))?,
-        Some(pwd.unwrap().as_str()),
-        None
+        &mut FileWrapper(f),
+        pwd.as_deref(),
+        None,
     )
 }
 
