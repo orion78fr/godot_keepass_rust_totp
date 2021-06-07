@@ -68,3 +68,22 @@ icon = ExtResource( 1 )
 margin_right = 1024.0
 margin_bottom = 128.0
 align = 1
+
+[node name="FileDialog" type="FileDialog" parent="."]
+margin_left = 218.0
+margin_top = 74.0
+margin_right = 827.0
+margin_bottom = 532.0
+popup_exclusive = true
+window_title = "Ouvrir un fichier"
+resizable = true
+mode = 0
+access = 2
+current_dir = "/Users/OriOn78fr/Documents/godot/keepassRustTotp"
+current_file = "."
+current_path = "/Users/OriOn78fr/Documents/godot/keepassRustTotp/."
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]

@@ -4,6 +4,10 @@ use keepass::{Database, Group};
 use keepass::Value::{Bytes, Unprotected, Protected};
 use std::str::from_utf8;
 use std::io::Write;
+use std::time::SystemTime;
+
+use otpauth_uri::parser::parse_otpauth_uri;
+use otpauth_uri::types::OTPGenerator;
 
 #[derive(NativeClass)]
 #[inherit(Reference)]
@@ -26,8 +30,28 @@ impl KeepassTotp {
         }
 
         let otps = iterate_group(&db.0.unwrap().root);
+        let now = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH).unwrap()
+            .as_secs();
 
-        return String::from(otps.join("\r\n"));
+        return otps.iter()
+            .map(|s| {
+                parse_otpauth_uri(s).unwrap()
+            })
+            .map(|otp| {
+                OTPGenerator::from(otp)
+            })
+            .filter_map(|otp| {
+                match otp {
+                    OTPGenerator::TOTPGenerator(g) => Some(g.generate(now)),
+                    OTPGenerator::HOTPGenerator(_) => None
+                }
+            })
+            .fold(String::new(), |mut acc, s| {
+                acc += s.as_str();
+                acc += "\n";
+                acc
+            });
     }
 }
 
@@ -126,3 +150,6 @@ fn iterate_group(group: &Group) -> Vec<String> {
 }
 
 godot_init!(init);
+
+#[test]
+fn test() {}
