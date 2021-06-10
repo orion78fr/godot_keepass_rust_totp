@@ -7,51 +7,64 @@ use std::io::Write;
 use std::time::SystemTime;
 
 use otpauth_uri::parser::parse_otpauth_uri;
-use otpauth_uri::types::OTPGenerator;
+use otpauth_uri::types::{OTPGenerator, OTPUri};
 
 #[derive(NativeClass)]
 #[inherit(Reference)]
-struct KeepassTotp;
+struct KeepassTotp {
+    otps: Option<Vec<OTPGenerator>>
+}
 
 #[methods]
 impl KeepassTotp {
     fn new(_owner: TRef<Reference>) -> Self {
-        KeepassTotp
+        KeepassTotp {
+            otps: None
+        }
     }
 
     #[export]
-    fn open_keepass_db(&self,
+    fn open_keepass_db(&mut self,
                        _owner: TRef<Reference>,
                        db_path: GodotString,
-                       pwd: Option<String>) -> String {
+                       pwd: Option<String>) -> Option<String> {
         let db = open_db(db_path, pwd);
         if db.0.is_err() {
-            return format!("{:?}", db.0.unwrap_err());
+            return Some(format!("{:?}", db.0.unwrap_err()));
         }
 
-        let otps = iterate_group(&db.0.unwrap().root);
-        let now = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH).unwrap()
-            .as_secs();
-
-        return otps.iter()
+        self.otps = Some(iterate_group(&db.0.unwrap().root).iter()
             .map(|s| {
-                parse_otpauth_uri(s).unwrap()
+                parse_otpauth_uri(s).unwrap() // TODO
             })
             .map(|otp| {
                 OTPGenerator::from(otp)
             })
+            .collect());
+
+        return None;
+    }
+
+    #[export]
+    fn generate_otps(&self,
+                     _owner: TRef<Reference>) -> Option<Vec<String>> {
+        if self.otps.is_none() {
+            return None
+        }
+
+        let now = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH).unwrap()
+            .as_secs();
+
+        Some(self.otps.as_ref().unwrap()
+            .iter()
             .filter_map(|otp| {
                 match otp {
                     OTPGenerator::TOTPGenerator(g) => Some(g.generate(now)),
                     OTPGenerator::HOTPGenerator(_) => None
                 }
             })
-            .fold(String::new(), |mut acc, s| {
-                acc += s.as_str();
-                acc += "\n";
-                acc
-            });
+            .collect())
     }
 }
 

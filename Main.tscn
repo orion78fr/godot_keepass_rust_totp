@@ -64,7 +64,7 @@ rect_min_size = Vector2( 0, 150 )
 text = "Test 5"
 icon = ExtResource( 1 )
 
-[node name="Debug Label" type="Label" parent="."]
+[node name="DebugLabel" type="Label" parent="."]
 margin_right = 1024.0
 margin_bottom = 128.0
 align = 1
