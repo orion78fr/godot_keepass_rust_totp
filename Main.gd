@@ -1,6 +1,8 @@
 extends Control
 
-var totp;
+var totps
+
+onready var OtpButton = preload("res://OtpButton.tscn")
 
 func _ready():
 	var safe_area = OS.get_window_safe_area()
@@ -12,20 +14,18 @@ func _ready():
 
 
 func _on_FileDialog_file_selected(path):
-	totp = KeepassTotp.new()
+	var native = KeepassTotp.new()
 
-	var error = totp.open_keepass_db(path, "azerty")
-	if error != null :
-		$DebugLabel.text = error
-		return
+	var res = native.open_keepass_db(path, "azerty");
 
-	var generated = totp.generate_otps()
-	if generated == null || generated.size() == 0:
-		$DebugLabel.text = "No OTPs generated"
-		return
+	if res.has("Err"):
+		$DebugLabel.text = res.get("Err")
+	else:
+		totps = res.get("Ok")
 
-	var s = ""
-	for g in generated :
-		s += g + "\n"
+		for totp in totps:
+			var button = OtpButton.instance()
+			button.set_otp(totp)
+			$"ScrollContainer/VBoxContainer".add_child(button)
 
-	$DebugLabel.text = s
+

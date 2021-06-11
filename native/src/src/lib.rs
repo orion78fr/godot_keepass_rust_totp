@@ -1,70 +1,96 @@
 use gdnative::prelude::*;
 use gdnative::api::{Reference, File};
 use keepass::{Database, Group};
-use keepass::Value::{Bytes, Unprotected, Protected};
-use std::str::from_utf8;
 use std::io::Write;
 use std::time::SystemTime;
 
 use otpauth_uri::parser::parse_otpauth_uri;
-use otpauth_uri::types::{OTPGenerator, OTPUri};
+use otpauth_uri::types::{OTPGenerator};
 
 #[derive(NativeClass)]
 #[inherit(Reference)]
-struct KeepassTotp {
-    otps: Option<Vec<OTPGenerator>>
+struct KeepassTotp;
+
+#[derive(NativeClass)]
+#[inherit(Reference)]
+#[no_constructor]
+struct TOTPEntry {
+    otp: Option<OTPGenerator>,
+
+    #[property]
+    name: String,
+    #[property]
+    user: String,
+    #[property]
+    pass: String,
+
+    icon: Icon,
+}
+
+enum Icon {
+    None,
+    Id(u8),
+    CustomRef(String),
+    Custom(Vec<u8>),
 }
 
 #[methods]
 impl KeepassTotp {
     fn new(_owner: TRef<Reference>) -> Self {
-        KeepassTotp {
-            otps: None
-        }
+        KeepassTotp {}
     }
 
     #[export]
     fn open_keepass_db(&mut self,
                        _owner: TRef<Reference>,
                        db_path: GodotString,
-                       pwd: Option<String>) -> Option<String> {
+                       pwd: Option<String>) -> Result<Vec<Variant>, String> {
         let db = open_db(db_path, pwd);
         if db.0.is_err() {
-            return Some(format!("{:?}", db.0.unwrap_err()));
+            return Err(format!("{:?}", db.0.unwrap_err()));
         }
 
-        self.otps = Some(iterate_group(&db.0.unwrap().root).iter()
-            .map(|s| {
-                parse_otpauth_uri(s).unwrap() // TODO
-            })
-            .map(|otp| {
-                OTPGenerator::from(otp)
-            })
-            .collect());
+        let Database { root, metadata, .. } = db.0.unwrap();
 
-        return None;
+        return Ok(iterate_group(&root)
+            .into_iter()
+            .map(|mut e| {
+                if let Icon::CustomRef(uuid) = &e.icon {
+                    // TODO
+                    e.icon = Icon::Custom(base64::decode(metadata.as_ref().unwrap().custom_icons.get(uuid).unwrap()).unwrap())
+                }
+                e
+            })
+            .map(Instance::emplace)
+            .map(|i| i.owned_to_variant())
+            .collect());
+    }
+}
+
+#[methods]
+impl TOTPEntry {
+    #[export]
+    fn generate(&self,
+                _owner: TRef<Reference>) -> Option<String> {
+        match self.otp.as_ref().unwrap() {
+            OTPGenerator::TOTPGenerator(g) => {
+                let now = SystemTime::now()
+                    .duration_since(SystemTime::UNIX_EPOCH).unwrap()
+                    .as_secs();
+
+                Some(g.generate(now))
+            }
+            OTPGenerator::HOTPGenerator(_) => None
+        }
     }
 
     #[export]
-    fn generate_otps(&self,
-                     _owner: TRef<Reference>) -> Option<Vec<String>> {
-        if self.otps.is_none() {
-            return None
+    fn get_custom_icon(&self,
+                       _owner: TRef<Reference>) -> Option<Vec<u8>> {
+        match &self.icon {
+            Icon::Custom(bytes) => Some(bytes.clone()),
+            _ => None
         }
-
-        let now = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH).unwrap()
-            .as_secs();
-
-        Some(self.otps.as_ref().unwrap()
-            .iter()
-            .filter_map(|otp| {
-                match otp {
-                    OTPGenerator::TOTPGenerator(g) => Some(g.generate(now)),
-                    OTPGenerator::HOTPGenerator(_) => None
-                }
-            })
-            .collect())
     }
 }
 
@@ -84,6 +110,7 @@ impl std::io::Read for FileWrapper {
 
 fn init(handle: InitHandle) {
     handle.add_class::<KeepassTotp>();
+    handle.add_class::<TOTPEntry>();
 }
 
 #[derive(Debug)]
@@ -130,33 +157,39 @@ fn open_db(path: GodotString, pwd: Option<String>) -> ResultWrapper<Database, Er
     ).into()
 }
 
-fn iterate_group(group: &Group) -> Vec<String> {
-    let mut res: Vec<String> = Vec::new();
+fn iterate_group(group: &Group) -> Vec<TOTPEntry> {
+    let mut res: Vec<TOTPEntry> = Vec::new();
 
     // Iterate over all Groups and Nodes
-    for (_, node) in &group.entries {
-        let title = node.get_title().unwrap();
-        let user = node.get_username().unwrap();
-        let pass = node.get_password().unwrap();
-        let otp = node.fields.get("otp").map(|v| {
-            match v {
-                Bytes(b) => from_utf8(b.as_slice()).unwrap(),
-                Unprotected(str) => str,
-                Protected(sstr) => from_utf8(sstr.unsecure()).unwrap()
+    for node in &group.children {
+        match node {
+            keepass::Node::Group(group) => {
+                res.extend(iterate_group(&group));
             }
-        });
+            keepass::Node::Entry(entry) => {
+                let otp = entry.get("otp");
 
-        if otp.is_some() {
-            res.push(otp.unwrap().into())
+                if otp.is_some() {
+                    let title = entry.get_title().unwrap();
+                    let user = entry.get_username().unwrap();
+                    let pass = entry.get_password().unwrap();
+
+                    let icon = &entry.icon;
+
+                    res.push(TOTPEntry {
+                        otp: parse_otpauth_uri(otp.unwrap()).map(OTPGenerator::from).ok(),
+                        name: title.to_string(),
+                        user: user.to_string(),
+                        pass: pass.to_string(),
+                        icon: match icon {
+                            keepass::Icon::None => Icon::None,
+                            keepass::Icon::IconID(id) => Icon::Id(*id),
+                            keepass::Icon::CustomIcon(uuid) => Icon::CustomRef(uuid.clone())
+                        },
+                    });
+                }
+            }
         }
-
-        godot_print!("Entry '{0}': '{1}' : '{2}'", title, user, pass);
-        godot_print!("\tTOTP is : {:?}", otp);
-    }
-
-    for (_, g) in &group.child_groups {
-        godot_print!("Saw group '{0}'", g.name);
-        res.extend(iterate_group(&g));
     }
 
     return res;
@@ -165,4 +198,15 @@ fn iterate_group(group: &Group) -> Vec<String> {
 godot_init!(init);
 
 #[test]
-fn test() {}
+fn test() {
+    use std::fs::File;
+    use std::path::Path;
+
+    let db = Database::open(
+        &mut File::open(Path::new("../../test/totp_test.kdbx")).unwrap(),
+        Some("azerty"),
+        None,
+    ).unwrap();
+
+    db.header;
+}

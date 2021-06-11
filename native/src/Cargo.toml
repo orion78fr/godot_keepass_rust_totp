@@ -6,8 +6,9 @@ edition = "2018"
 
 [dependencies]
 gdnative = "0.9.3"
-keepass = "0.4.8"
+keepass = "0.4.9"
 otpauth-uri = "1.0.3"
+base64 = "0.13"
 
 # Dependencies for tests
 [dev-dependencies]
@@ -24,3 +25,4 @@ split-debuginfo = "off"
 [patch.crates-io]
 chrono = { git = 'https://github.com/orion78fr/chrono', branch = "main" }
 otpauth-uri = { git = 'https://github.com/orion78fr/otpauth-uri', branch = "master" }
+keepass = { git = 'https://github.com/orion78fr/keepass-rs', branch = "master" }
