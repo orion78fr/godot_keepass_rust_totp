@@ -10,7 +10,12 @@ func _ready():
 	$ScrollContainer.rect_position = safe_area.position
 	$ScrollContainer.rect_size = safe_area.size
 
-	$FileDialog.popup()
+	var os_name = OS.get_name()
+
+	if os_name == "Android" || os_name == "HTML5":
+		_on_FileDialog_file_selected("res://test/totp_test.kdbx")
+	else:
+		$FileDialog.popup()
 
 
 func _on_FileDialog_file_selected(path):
