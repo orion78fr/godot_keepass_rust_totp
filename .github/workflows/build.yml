@@ -328,8 +328,6 @@ jobs:
           # No overflow check / assertions
           CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS: false
           CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS: false
-          # Link time optimisations (to reduce size)
-          CARGO_PROFILE_RELEASE_LTO: true
           # Don't unwind the stack
           CARGO_PROFILE_RELEASE_PANIC: abort
           # Use my wrapper to extract the rlib
