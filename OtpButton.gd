@@ -15,8 +15,16 @@ func set_otp(p_otp):
 
 		$"HBoxContainer/CenterContainer/TextureProgress".texture_under = texture
 		$"HBoxContainer/CenterContainer/TextureProgress".texture_progress = texture
-	$"HBoxContainer/VBoxContainer/Name".text = otp.name
-	$"HBoxContainer/VBoxContainer/User".text = otp.user
-	$"HBoxContainer/OTP".text = otp.generate()
 
+	$"HBoxContainer/Data/Name".text = otp.name
+	$"HBoxContainer/Data/User".text = otp.user
+	$"HBoxContainer/Data/URL".text = otp.url
 
+	generate()
+
+func generate():
+	var generated: String = otp.generate()
+	$"HBoxContainer/OTP".text = generated.insert(3, " ")
+
+func progress(value):
+	$"HBoxContainer/CenterContainer/TextureProgress".value = value

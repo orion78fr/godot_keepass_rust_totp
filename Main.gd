@@ -16,6 +16,7 @@ func _ready():
 		_on_FileDialog_file_selected("res://test/totp_test.kdbx")
 	else:
 		$FileDialog.popup()
+		#$PasswordDialog.popup()
 
 
 func _on_FileDialog_file_selected(path):
@@ -27,6 +28,8 @@ func _on_FileDialog_file_selected(path):
 		$DebugLabel.text = res.get("Err")
 	else:
 		totps = res.get("Ok")
+
+		$AnimationPlayer.play("Timer")
 
 		for totp in totps:
 			var button = OtpButton.instance()

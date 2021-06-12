@@ -23,6 +23,8 @@ struct TOTPEntry {
     user: String,
     #[property]
     pass: String,
+    #[property]
+    url: String,
 
     icon: Icon,
 }
@@ -173,6 +175,7 @@ fn iterate_group(group: &Group) -> Vec<TOTPEntry> {
                     let title = entry.get_title().unwrap();
                     let user = entry.get_username().unwrap();
                     let pass = entry.get_password().unwrap();
+                    let url = entry.get_url().unwrap();
 
                     let icon = &entry.icon;
 
@@ -181,6 +184,7 @@ fn iterate_group(group: &Group) -> Vec<TOTPEntry> {
                         name: title.to_string(),
                         user: user.to_string(),
                         pass: pass.to_string(),
+                        url: url.to_string(),
                         icon: match icon {
                             keepass::Icon::None => Icon::None,
                             keepass::Icon::IconID(id) => Icon::Id(*id),
