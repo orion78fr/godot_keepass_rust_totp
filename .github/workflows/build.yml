@@ -156,6 +156,7 @@ jobs:
           C_INCLUDE_PATH: /osxcross/SDK/MacOSX10.10.sdk/usr/include
           CARGO_TARGET_X86_64_APPLE_DARWIN_LINKER: /osxcross/bin/x86_64-apple-darwin14-cc
           CARGO_TARGET_DIR: native/target
+          CARGO_PROFILE_RELEASE_SPLIT_DEBUGINFO: off
       - name: Build
         run: |
           mkdir -v -p exports/mac

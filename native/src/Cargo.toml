@@ -19,7 +19,6 @@ crate-type = ["cdylib"]
 [profile.release]
 debug = true
 opt-level = 3
-split-debuginfo = "off"
 
 # Try to patch the chrono compile bug for wasm target
 [patch.crates-io]
