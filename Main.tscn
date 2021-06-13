@@ -174,3 +174,6 @@ autoplay = "Timer"
 anims/Timer = SubResource( 1 )
 
 [connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]
+[connection signal="popup_hide" from="ErrorDialog" to="." method="_on_ErrorDialog_popup_hide"]
+[connection signal="text_entered" from="PasswordDialog/CenterContainer/HBoxContainer/LineEdit" to="." method="_on_LineEdit_text_entered"]
+[connection signal="pressed" from="PasswordDialog/CenterContainer/HBoxContainer/Button" to="." method="_on_Password_Button_pressed"]

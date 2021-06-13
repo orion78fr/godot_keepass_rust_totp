@@ -4,6 +4,8 @@ var totps
 
 onready var OtpButton = preload("res://OtpButton.tscn")
 
+var file
+
 func _ready():
 	var safe_area = OS.get_window_safe_area()
 
@@ -13,19 +15,35 @@ func _ready():
 	var os_name = OS.get_name()
 
 	if os_name == "Android" || os_name == "HTML5":
-		_on_FileDialog_file_selected("res://test/totp_test.kdbx")
-	else:
-		#$FileDialog.popup()
-		$PasswordDialog.popup()
+		file = "res://test/totp_test.kdbx"
 
+		open_database("azerty")
+	else:
+		$FileDialog.popup()
+
+func _on_ErrorDialog_popup_hide():
+	$FileDialog.popup()
 
 func _on_FileDialog_file_selected(path):
-	var native = KeepassTotp.new()
+	file = path
+	$PasswordDialog.popup()
 
-	var res = native.open_keepass_db(path, "azerty");
+func _on_LineEdit_text_entered(pwd):
+	$PasswordDialog.hide()
+	open_database(pwd)
+
+func _on_Password_Button_pressed():
+	$PasswordDialog.hide()
+	var pwd = $"PasswordDialog/CenterContainer/HBoxContainer/LineEdit".text
+	open_database(pwd)
+
+func open_database(pwd):
+	var native = KeepassTotp.new()
+	var res = native.open_keepass_db(file, pwd);
 
 	if res.has("Err"):
-		$DebugLabel.text = res.get("Err")
+		$"ErrorDialog/CenterContainer/Label".text = res.get("Err")
+		$ErrorDialog.popup()
 	else:
 		totps = res.get("Ok")
 
@@ -35,5 +53,3 @@ func _on_FileDialog_file_selected(path):
 			var button = OtpButton.instance()
 			button.set_otp(totp)
 			$"ScrollContainer/VBoxContainer".add_child(button)
-
-
