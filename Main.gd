@@ -15,8 +15,8 @@ func _ready():
 	if os_name == "Android" || os_name == "HTML5":
 		_on_FileDialog_file_selected("res://test/totp_test.kdbx")
 	else:
-		$FileDialog.popup()
-		#$PasswordDialog.popup()
+		#$FileDialog.popup()
+		$PasswordDialog.popup()
 
 
 func _on_FileDialog_file_selected(path):
