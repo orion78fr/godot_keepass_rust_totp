@@ -83,7 +83,7 @@ fn test_fun() -> String {
     let vm_pointer = jni::VM.read().unwrap();
 
     return jni_glue::VM::from_jni_local(vm_pointer).with_env(|env| {
-        let intent = Intent::new().unwrap(env);
+        let intent = Intent::new(env).unwrap();
 
         return format!("We are in Android ! {:?}", intent.toString().unwrap());
     });
@@ -247,6 +247,7 @@ mod jni {
     use lazy_static::lazy_static;
     use jni_glue::jni_sys::{JavaVM, jint};
     use jni_glue::std::ffi::c_void;
+    use std::sync::RwLock;
 
     pub(crate) struct JavaVMWrapper {
         vm: Option<*const JavaVM>
