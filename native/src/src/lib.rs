@@ -80,9 +80,13 @@ impl KeepassTotp {
 fn test_fun() -> String {
     use jni_android_sys::android::content::Intent;
 
-    let intent = Intent::new().unwrap();
+    let vm_pointer = jni::VM.read().unwrap();
 
-    return format!("We are in Android ! {:?}", intent.toString().unwrap());
+    return jni_glue::VM::from_jni_local(vm_pointer).with_env(|env| {
+        let intent = Intent::new().unwrap(env);
+
+        return format!("We are in Android ! {:?}", intent.toString().unwrap());
+    });
 }
 
 #[cfg(not(target_os = "android"))]
@@ -240,6 +244,7 @@ fn test() {
 #[cfg(target_os = "android")]
 /// Methods automatically invoked by the JVM.
 mod jni {
+    use lazy_static::lazy_static;
     use jni_glue::jni_sys::{JavaVM, jint};
     use jni_glue::std::ffi::c_void;
 
