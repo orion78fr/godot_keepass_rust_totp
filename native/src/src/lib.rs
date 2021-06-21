@@ -85,7 +85,7 @@ fn test_fun() -> String {
 
         use jni_android_sys::android::content::Intent;
 
-        return jni::VM.unwrap().with_env(|env| {
+        return jni_glue::VM::from_jni_local(jni::VM.unwrap()).with_env(|env| {
             let intent = Intent::new(env).unwrap();
 
             return format!("We are in Android ! {:?}", intent.toString().unwrap());
@@ -282,7 +282,7 @@ mod jni {
         pub(crate) static ref VM : RwLock<JavaVMWrapper> = RwLock::new(JavaVMWrapper::new());
     }*/
 
-    static mut VM: Option<*const JavaVM> = None;
+    pub(crate) static mut VM: Option<*const JavaVM> = None;
 
     #[no_mangle]
     #[allow(non_snake_case)]
