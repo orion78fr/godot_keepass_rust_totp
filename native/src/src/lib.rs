@@ -294,7 +294,7 @@ mod jni {
 
     #[no_mangle]
     #[allow(non_snake_case)]
-    pub extern "system" fn JNI_OnUnload(vm: *const JavaVM, reserved: *const c_void) {
+    pub unsafe extern "system" fn JNI_OnUnload(vm: *const JavaVM, reserved: *const c_void) {
         //VM.write().unwrap().unset_vm();
         VM = None;
         jni_glue::on_unload(vm, reserved)
