@@ -78,13 +78,20 @@ impl KeepassTotp {
 
 #[cfg(target_os = "android")]
 fn test_fun() -> String {
-    use jni_android_sys::android::content::Intent;
+    unsafe{
+        if jni::VM.is_none() {
+            return "No JNI";
+        }
 
-    return jni::VM.read().unwrap().get_vm().unwrap().with_env(|env| {
-        let intent = Intent::new(env).unwrap();
+        use jni_android_sys::android::content::Intent;
 
-        return format!("We are in Android ! {:?}", intent.toString().unwrap());
-    });
+        return jni::VM.unwrap().with_env(|env| {
+            let intent = Intent::new(env).unwrap();
+
+            return format!("We are in Android ! {:?}", intent.toString().unwrap());
+        });
+    }
+
 }
 
 #[cfg(not(target_os = "android"))]
@@ -247,7 +254,7 @@ mod jni {
     use jni_glue::std::ffi::c_void;
     use std::sync::RwLock;
 
-    pub(crate) struct JavaVMWrapper {
+    /*pub(crate) struct JavaVMWrapper {
         vm: Option<jni_glue::VM>,
     }
 
@@ -258,8 +265,8 @@ mod jni {
             }
         }
 
-        pub(crate) fn get_vm(&self) -> Option<jni_glue::VM> {
-            self.vm
+        pub(crate) fn get_vm(&self) -> &Option<jni_glue::VM> {
+            &self.vm
         }
 
         fn set_vm(&mut self, vm: jni_glue::VM) {
@@ -273,20 +280,23 @@ mod jni {
 
     lazy_static! { // RwLock::new is not const
         pub(crate) static ref VM : RwLock<JavaVMWrapper> = RwLock::new(JavaVMWrapper::new());
-    }
+    }*/
 
+    static mut VM: Option<*const JavaVM> = None;
 
     #[no_mangle]
     #[allow(non_snake_case)]
     pub unsafe extern "system" fn JNI_OnLoad(vm: *const JavaVM, reserved: *const c_void) -> jint {
-        VM.write().unwrap().set_vm(*jni_glue::VM::from_jni_local(&*vm));
+        //VM.write().unwrap().set_vm(*jni_glue::VM::from_jni_local(&*vm));
+        VM = Some(vm);
         jni_glue::on_load(vm, reserved)
     }
 
     #[no_mangle]
     #[allow(non_snake_case)]
     pub extern "system" fn JNI_OnUnload(vm: *const JavaVM, reserved: *const c_void) {
-        VM.write().unwrap().unset_vm();
+        //VM.write().unwrap().unset_vm();
+        VM = None;
         jni_glue::on_unload(vm, reserved)
     }
 }
