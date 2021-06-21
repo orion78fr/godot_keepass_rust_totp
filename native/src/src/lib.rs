@@ -80,7 +80,7 @@ impl KeepassTotp {
 fn test_fun() -> String {
     use jni_android_sys::android::content::Intent;
 
-    return jni::VM.read().unwrap().with_env(|env| {
+    return jni::VM.read().unwrap().get_vm().with_env(|env| {
         let intent = Intent::new(env).unwrap();
 
         return format!("We are in Android ! {:?}", intent.toString().unwrap());
@@ -279,7 +279,7 @@ mod jni {
     #[no_mangle]
     #[allow(non_snake_case)]
     pub unsafe extern "system" fn JNI_OnLoad(vm: *const JavaVM, reserved: *const c_void) -> jint {
-        VM.write().unwrap().set_vm(jni_glue::VM::from_jni_local(vm));
+        VM.write().unwrap().set_vm(*jni_glue::VM::from_jni_local(vm));
         jni_glue::on_load(vm, reserved)
     }
 
