@@ -80,9 +80,9 @@ impl KeepassTotp {
 fn test_fun() -> String {
     use jni_android_sys::android::content::Intent;
 
-    let intent = Intent::new();
+    let intent = Intent::new().unwrap();
 
-    return format!("We are in Android ! {:?}", intent);
+    return format!("We are in Android ! {}", intent.toString().unwrap());
 }
 
 #[cfg(not(target_os = "android"))]
@@ -235,4 +235,52 @@ fn test() {
     ).unwrap();
 
     db.header;
+}
+
+#[cfg(target_os = "android")]
+/// Methods automatically invoked by the JVM.
+mod jni {
+    use jni_glue::jni_sys::{JavaVM, jint};
+    use jni_glue::std::ffi::c_void;
+
+    pub(crate) struct JavaVMWrapper {
+        vm: Option<*const JavaVM>
+    }
+
+    impl JavaVMWrapper{
+        fn new() -> Self {
+            JavaVMWrapper{
+                vm: None
+            }
+        }
+
+        pub(crate) fn get_vm(&self) -> Option<*const JavaVM> {
+            self.vm
+        }
+
+        fn set_vm(&mut self, vm: *const JavaVM) {
+            self.vm = Some(vm)
+        }
+
+        fn unset_vm(&mut self) {
+            self.vm = None
+        }
+    }
+
+    lazy_static! { // RwLock::new is not const
+        pub(crate) static ref VM : RwLock<JavaVMWrapper> = RwLock::new(JavaVMWrapper::new());
+    }
+
+
+    #[no_mangle] #[allow(non_snake_case)]
+    pub unsafe extern "system" fn JNI_OnLoad(vm: *const JavaVM, reserved: *const c_void) -> jint {
+        VM.write().unwrap().set_vm(vm);
+        jni_glue::on_load(vm, reserved)
+    }
+
+    #[no_mangle] #[allow(non_snake_case)]
+    pub extern "system" fn JNI_OnUnload(vm: *const JavaVM, reserved: *const c_void) {
+        VM.write().unwrap().unset_vm();
+        jni_glue::on_unload(vm, reserved)
+    }
 }
