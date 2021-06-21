@@ -10,6 +10,11 @@ keepass = "0.4.9"
 otpauth-uri = "1.0.3"
 base64 = "0.13"
 
+[target.'cfg(target_os = "android")'.dependencies]
+jni-android-sys = { version = "0.0.10", features = ["api-level-28", "android-content-Intent"] }
+jni-glue        = { version = "0.0.10", features = [] }
+jni-sys         = "0.3"
+
 # Dependencies for tests
 [dev-dependencies]
 

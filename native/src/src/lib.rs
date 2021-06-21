@@ -67,7 +67,29 @@ impl KeepassTotp {
             .map(|i| i.owned_to_variant())
             .collect());
     }
+
+    #[export]
+    fn android_test(&mut self,
+                   _owner: TRef<Reference>) -> String {
+        return test_fun();
+    }
 }
+
+
+#[cfg(target_os = "android")]
+fn test_fun() -> String {
+    use android::content::Intent;
+
+    let intent = Intent::new();
+
+    return format!("We are in Android ! {:?}", intent);
+}
+
+#[cfg(not(target_os = "android"))]
+fn test_fun() -> String {
+    return "Not Android".to_string();
+}
+
 
 #[methods]
 impl TOTPEntry {
