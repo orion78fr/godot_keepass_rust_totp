@@ -78,7 +78,7 @@ impl KeepassTotp {
 
 #[cfg(target_os = "android")]
 fn test_fun() -> String {
-    use android::content::Intent;
+    use jni_android_sys::android::content::Intent;
 
     let intent = Intent::new();
 
