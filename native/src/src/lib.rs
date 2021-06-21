@@ -70,7 +70,7 @@ impl KeepassTotp {
 
     #[export]
     fn android_test(&mut self,
-                   _owner: TRef<Reference>) -> String {
+                    _owner: TRef<Reference>) -> String {
         return test_fun();
     }
 }
@@ -80,9 +80,7 @@ impl KeepassTotp {
 fn test_fun() -> String {
     use jni_android_sys::android::content::Intent;
 
-    let vm_pointer = jni::VM.read().unwrap();
-
-    return jni_glue::VM::from_jni_local(vm_pointer).with_env(|env| {
+    return jni::VM.read().unwrap().with_env(|env| {
         let intent = Intent::new(env).unwrap();
 
         return format!("We are in Android ! {:?}", intent.toString().unwrap());
@@ -250,21 +248,21 @@ mod jni {
     use std::sync::RwLock;
 
     pub(crate) struct JavaVMWrapper {
-        vm: Option<*const JavaVM>
+        vm: Option<jni_glue::VM>,
     }
 
-    impl JavaVMWrapper{
+    impl JavaVMWrapper {
         fn new() -> Self {
-            JavaVMWrapper{
+            JavaVMWrapper {
                 vm: None
             }
         }
 
-        pub(crate) fn get_vm(&self) -> Option<*const JavaVM> {
+        pub(crate) fn get_vm(&self) -> Option<jni_glue::VM> {
             self.vm
         }
 
-        fn set_vm(&mut self, vm: *const JavaVM) {
+        fn set_vm(&mut self, vm: jni_glue::VM) {
             self.vm = Some(vm)
         }
 
@@ -278,13 +276,15 @@ mod jni {
     }
 
 
-    #[no_mangle] #[allow(non_snake_case)]
+    #[no_mangle]
+    #[allow(non_snake_case)]
     pub unsafe extern "system" fn JNI_OnLoad(vm: *const JavaVM, reserved: *const c_void) -> jint {
-        VM.write().unwrap().set_vm(vm);
+        VM.write().unwrap().set_vm(jni_glue::VM::from_jni_local(vm));
         jni_glue::on_load(vm, reserved)
     }
 
-    #[no_mangle] #[allow(non_snake_case)]
+    #[no_mangle]
+    #[allow(non_snake_case)]
     pub extern "system" fn JNI_OnUnload(vm: *const JavaVM, reserved: *const c_void) {
         VM.write().unwrap().unset_vm();
         jni_glue::on_unload(vm, reserved)
