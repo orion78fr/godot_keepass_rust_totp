@@ -85,7 +85,7 @@ fn test_fun() -> String {
 
         use jni_android_sys::android::content::Intent;
 
-        return jni_glue::VM::from_jni_local(jni::VM.unwrap()).with_env(|env| {
+        return jni_glue::VM::from_jni_local(jni::VM.as_ref().unwrap()).with_env(|env| {
             let intent = Intent::new(env).unwrap();
 
             return format!("We are in Android ! {:?}", intent.toString().unwrap());
