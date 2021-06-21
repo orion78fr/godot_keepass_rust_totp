@@ -80,7 +80,7 @@ impl KeepassTotp {
 fn test_fun() -> String {
     unsafe{
         if jni::VM.is_none() {
-            return "No JNI";
+            return "No JNI".to_string();
         }
 
         use jni_android_sys::android::content::Intent;
@@ -252,9 +252,9 @@ mod jni {
     use lazy_static::lazy_static;
     use jni_glue::jni_sys::{JavaVM, jint};
     use jni_glue::std::ffi::c_void;
-    use std::sync::RwLock;
+    /*use std::sync::RwLock;
 
-    /*pub(crate) struct JavaVMWrapper {
+    pub(crate) struct JavaVMWrapper {
         vm: Option<jni_glue::VM>,
     }
 
