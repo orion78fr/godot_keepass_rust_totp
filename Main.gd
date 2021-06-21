@@ -13,8 +13,9 @@ func _ready():
 	$ScrollContainer.rect_size = safe_area.size
 
 	var os_name = OS.get_name()
-
-	if os_name == "Android" || os_name == "HTML5":
+	if os_name == "Android":
+		$DebugLabel.text = KeepassTotp.new().androidTest();
+	elif os_name == "HTML5":
 		file = "res://test/totp_test.kdbx"
 
 		open_database("azerty")

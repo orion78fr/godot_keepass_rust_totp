@@ -76,6 +76,7 @@ window_title = "Ouvrir un fichier"
 resizable = true
 mode = 0
 access = 2
+show_hidden_files = true
 current_dir = "/Users/OriOn78fr/Documents/godot/keepassRustTotp"
 current_file = "."
 current_path = "/Users/OriOn78fr/Documents/godot/keepassRustTotp/."
@@ -113,7 +114,6 @@ custom_fonts/font = ExtResource( 3 )
 text = "Error message"
 
 [node name="PasswordDialog" type="WindowDialog" parent="."]
-visible = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 20.0
