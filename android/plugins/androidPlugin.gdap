@@ -1,0 +1,11 @@
+[config]
+
+name="Android File Opener Plugin"
+binary_type="local"
+binary="res://androidPlugin/app/build/outputs/aar/app-debug.aar"
+
+[dependencies]
+
+local=[]
+remote=[]
+custom_maven_repos=[]

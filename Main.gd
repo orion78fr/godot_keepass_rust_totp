@@ -14,9 +14,22 @@ func _ready():
 
 	var os_name = OS.get_name()
 
-	if os_name == "Android" || os_name == "HTML5":
-		file = "res://test/totp_test.kdbx"
+	if os_name == "Android":
+		var singleton = Engine.get_singleton("Android File Opener Plugin")
+		$DebugLabel.text = singleton.getTheHelloWorld()
 
+		var readFile = singleton.getKeepassFile()
+
+		# Copy to a temp location
+		file = "user://tempFile"
+		var f = File.new()
+		f.open(file, File.WRITE)
+		f.store_buffer(readFile)
+		f.close()
+
+		$PasswordDialog.popup()
+	elif os_name == "HTML5":
+		file = "res://test/totp_test.kdbx"
 		open_database("azerty")
 	else:
 		$FileDialog.popup()

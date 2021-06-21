@@ -1,0 +1,2 @@
+rootProject.name = "Keepass TOTP Android Plugin"
+include ':app'

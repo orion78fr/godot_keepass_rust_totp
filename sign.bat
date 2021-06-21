@@ -1,0 +1,1 @@
+apksigner sign --ks C:\msys64\home\OriOn78fr\debug.keystore keepassTotp.apk
