@@ -14,6 +14,7 @@ base64 = "0.13"
 jni-android-sys = { version = "0.0.10", features = ["api-level-28", "android-content-Intent", "java-lang-String"] }
 jni-glue        = { version = "0.0.10", features = ["unsafe-manual-jni-load-unload"] }
 jni-sys         = "0.3"
+lazy_static     = "1.4.0"
 
 # Dependencies for tests
 [dev-dependencies]

@@ -82,7 +82,7 @@ fn test_fun() -> String {
 
     let intent = Intent::new().unwrap();
 
-    return format!("We are in Android ! {}", intent.toString().unwrap());
+    return format!("We are in Android ! {:?}", intent.toString().unwrap());
 }
 
 #[cfg(not(target_os = "android"))]
