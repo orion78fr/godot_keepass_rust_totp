@@ -262,7 +262,7 @@ jobs:
           CARGO_TARGET_DIR: native/target
 
       - name: Compile android plugin
-        run: gradlew
+        run: ./gradlew
         working-directory: ./androidPlugin
 
       - name: Move native libs
@@ -272,7 +272,7 @@ jobs:
           cp native/target/i686-linux-android/release/libgodot_rs_keepass.so android/build/libs/debug/x86/
           cp native/target/aarch64-linux-android/release/libgodot_rs_keepass.so android/build/libs/debug/arm64-v8a/
           cp native/target/armv7-linux-androideabi/release/libgodot_rs_keepass.so android/build/libs/debug/armeabi-v7a/
-        
+
       - name: Build
         run: |
           godot -e -q
