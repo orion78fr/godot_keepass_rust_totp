@@ -10,16 +10,20 @@ import androidx.annotation.NonNull;
 import org.godotengine.godot.Dictionary;
 import org.godotengine.godot.Godot;
 import org.godotengine.godot.plugin.GodotPlugin;
+import org.godotengine.godot.plugin.SignalInfo;
 import org.godotengine.godot.plugin.UsedByGodot;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class FileOpenerPlugin extends GodotPlugin {
     private static final int REQUEST_RESULT_GET_FILE = 4269;
+    private static final String GET_FILE_SIGNAL_NAME = "file_found";
 
     public FileOpenerPlugin(Godot godot) {
         super(godot);
@@ -29,6 +33,12 @@ public class FileOpenerPlugin extends GodotPlugin {
     @Override
     public String getPluginName() {
         return "Android File Opener Plugin";
+    }
+
+    @NonNull
+    @Override
+    public Set<SignalInfo> getPluginSignals() {
+        return Collections.singleton(new SignalInfo(GET_FILE_SIGNAL_NAME, byte[].class));
     }
 
     @UsedByGodot
@@ -66,6 +76,7 @@ public class FileOpenerPlugin extends GodotPlugin {
 
             try {
                 byte[] fileData = readFile(data.getData());
+                emitSignal(GET_FILE_SIGNAL_NAME, fileData);
                 // TODO send signal
             } catch (IOException e) {
                 Log.e("File Opener Plugin", "", e);
