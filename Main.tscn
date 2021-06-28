@@ -81,9 +81,9 @@ resizable = true
 mode = 0
 access = 2
 show_hidden_files = true
-current_dir = "/Users/OriOn78fr/Documents/godot/keepassRustTotp"
+current_dir = "/msys64/home/orion/godot_keepass_rust_totp"
 current_file = "."
-current_path = "/Users/OriOn78fr/Documents/godot/keepassRustTotp/."
+current_path = "/msys64/home/orion/godot_keepass_rust_totp/."
 __meta__ = {
 "_edit_use_anchors_": false
 }

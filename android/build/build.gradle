@@ -8,8 +8,8 @@ buildscript {
     apply from: 'config.gradle'
 
     repositories {
+        mavenCentral()
         google()
-        jcenter()
 //CHUNK_BUILDSCRIPT_REPOSITORIES_BEGIN
 //CHUNK_BUILDSCRIPT_REPOSITORIES_END
     }
@@ -27,7 +27,6 @@ allprojects {
     repositories {
         mavenCentral()
         google()
-        jcenter()
 //CHUNK_ALLPROJECTS_REPOSITORIES_BEGIN
 //CHUNK_ALLPROJECTS_REPOSITORIES_END
 

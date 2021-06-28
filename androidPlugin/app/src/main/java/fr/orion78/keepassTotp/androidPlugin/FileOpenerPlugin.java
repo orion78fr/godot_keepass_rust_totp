@@ -20,9 +20,6 @@ import java.util.concurrent.ExecutionException;
 
 public class FileOpenerPlugin extends GodotPlugin {
     private static final int REQUEST_RESULT_GET_FILE = 4269;
-    private static final String FILE_FOUND_SIGNAL_NAME = "fileFound";
-
-    private CompletableFuture<Uri> future = new CompletableFuture<>();
 
     public FileOpenerPlugin(Godot godot) {
         super(godot);
@@ -34,23 +31,18 @@ public class FileOpenerPlugin extends GodotPlugin {
         return "Android File Opener Plugin";
     }
 
-    @NonNull
     @UsedByGodot
-    public String getTheHelloWorld() {
-        return "Hello World from Android Plugin !";
+    public void getKeepassFile() {
+        openFile();
     }
 
-    public Dictionary test() {
-        Dictionary d = new Dictionary();
-        d.put("JNIEnv", );
-    }
+    private void openFile() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
 
-    @NonNull
-    @UsedByGodot
-    public byte[] getKeepassFile() throws IOException {
-        Uri uri = openFile();
-
-        return readFile(uri);
+        Log.e("File Opener Plugin", "Starting a file open request with result " + REQUEST_RESULT_GET_FILE);
+        getActivity().startActivityForResult(intent, REQUEST_RESULT_GET_FILE);
     }
 
     @NonNull
@@ -66,30 +58,18 @@ public class FileOpenerPlugin extends GodotPlugin {
         }
     }
 
-
-    private Uri openFile() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("*/*");
-
-        Log.e("File Opener Plugin", "Starting a file open request with result " + REQUEST_RESULT_GET_FILE);
-        getActivity().startActivityForResult(intent, REQUEST_RESULT_GET_FILE);
-
-        try {
-            return future.get();
-        } catch (ExecutionException | InterruptedException e) {
-            Log.e("File Opener Plugin", "Error while getting ", e);
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public void onMainActivityResult(int requestCode, int resultCode, Intent data) {
         super.onMainActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_RESULT_GET_FILE && resultCode == Activity.RESULT_OK) {
             Log.e("File Opener Plugin", "Got a file ! " + data.getData().toString());
 
-            future.complete(data.getData());
+            try {
+                byte[] fileData = readFile(data.getData());
+                // TODO send signal
+            } catch (IOException e) {
+                Log.e("File Opener Plugin", "", e);
+            }
         }
     }
 }

@@ -21,8 +21,8 @@ debug = true
 opt-level = 3
 lto = true
 
-# Try to patch the chrono compile bug for wasm target
 [patch.crates-io]
 chrono = { git = 'https://github.com/orion78fr/chrono', branch = "main" }
 otpauth-uri = { git = 'https://github.com/orion78fr/otpauth-uri', branch = "master" }
 keepass = { git = 'https://github.com/orion78fr/keepass-rs', branch = "master" }
+gdnative-sys = { git = "https://github.com/orion78fr/godot-rust", branch = "fix-msvc" }
