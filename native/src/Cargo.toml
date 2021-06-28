@@ -32,3 +32,4 @@ lto = true
 chrono = { git = 'https://github.com/orion78fr/chrono', branch = "main" }
 otpauth-uri = { git = 'https://github.com/orion78fr/otpauth-uri', branch = "master" }
 keepass = { git = 'https://github.com/orion78fr/keepass-rs', branch = "master" }
+gdnative-sys = { path = "../../../godot-rust/gdnative-sys" }

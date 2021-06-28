@@ -14,7 +14,7 @@ func _ready():
 
 	var os_name = OS.get_name()
 	if os_name == "Android":
-		$DebugLabel.text = KeepassTotp.new().androidTest();
+		$DebugLabel.text = KeepassTotp.new().android_test();
 	elif os_name == "HTML5":
 		file = "res://test/totp_test.kdbx"
 

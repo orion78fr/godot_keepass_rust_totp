@@ -75,7 +75,6 @@ impl KeepassTotp {
     }
 }
 
-
 #[cfg(target_os = "android")]
 fn test_fun() -> String {
     unsafe{

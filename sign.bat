@@ -1,0 +1,1 @@
+C:\Users\orion\AppData\Local\Android\Sdk\build-tools\30.0.3\apksigner sign --ks C:\Users\orion\.android\debug.keystore --ks-pass pass:android --key-pass pass:android keepassTotp.apk
