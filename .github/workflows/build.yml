@@ -290,11 +290,11 @@ jobs:
           echo 'export/android/shutdown_adb_on_exit = true' >> ~/.config/godot/editor_settings-3.tres
           mkdir -v -p exports/android
           godot -v --export-debug "Android" exports/android/${EXPORT_NAME}.apk
-          
+
       - name: Get logs
         if: ${{ always() }}
-        run: find androidPlugin/build/logs android/build/build/logs/ -type f -exec echo \>\>\> {} \; -exec cat {} \;
-      
+        run: find androidPlugin/build/logs android/build/build/logs/ -type f -exec echo \:\:group\:\:{} \; -exec cat {} \; -exec echo \:\:endgroup\:\: \;
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
