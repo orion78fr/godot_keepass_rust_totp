@@ -20,7 +20,7 @@ for f in "$@"; do
     fi
 done
 
-for i in {0..$((${#arr[*]}-1))}; do
+seq 0 $((${#arr[*]}-2)) | while read i; do
     if [[ "${arr[$i]}" == "-l" && "${arr[$(($i+1))]}" == "c" ]]; then
         echo found !
         unset arr[$i]
