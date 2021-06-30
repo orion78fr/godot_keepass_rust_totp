@@ -294,7 +294,7 @@ jobs:
       - name: Get gradle logs
         if: ${{ always() }}
         run: |
-          find androidPlugin/build/logs android/build/build/logs/ -type f -exec echo ::group::{} \; -exec cat {} \; -exec echo ::endgroup:: \;
+          find androidPlugin/logs android/build/logs/ -type f -exec echo ::group::{} \; -exec cat {} \; -exec echo ::endgroup:: \;
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
