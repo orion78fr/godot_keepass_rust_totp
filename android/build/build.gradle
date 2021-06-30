@@ -233,7 +233,7 @@ task copyAndRenameReleaseAab(type: Copy) {
 //CHUNK_GLOBAL_END
 
 def tstamp = new Date().format('yyyy-MM-dd_HH-mm-ss')
-def buildLogDir = "${rootDir}/build/logs"
+def buildLogDir = "${rootDir}/logs"
 mkdir("${buildLogDir}")
 def buildLog = new File("${buildLogDir}/${tstamp}_buildLog.log")
 import org.gradle.internal.logging.*
