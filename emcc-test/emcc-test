@@ -20,4 +20,11 @@ for f in "$@"; do
     fi
 done
 
+for i in {0..${#arr[*]}-1}; do
+    if [[ "${arr[$i]}" == "-l" && "${arr[$(($i+1))]}" == "c" ]]; then
+        unset arr[$i]
+        unset arr[$(($i+1))]
+    fi
+done
+
 emcc ${arr[@]}
