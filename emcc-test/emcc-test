@@ -1,31 +1,35 @@
 #!/bin/bash
 
-arr=()
+declare -a arr
 
 for f in "$@"; do
     if [[ "$f" == *.rlib ]]; then
+        ar --output "$(dirname "$f")" -x "$f"
         
-        ar --output "$(dirname $f)" -x $f
-        
-        ar -t $f | grep .o | while read o; do
-            fo=$(dirname $f)/$o
+        while read -r o; do
+            fo=$(dirname "$f")/$o
             
             arr+=("$fo")
-        done
+        done < <(ar -t "$f" | grep .o)
     else
         arr+=("$f")
     fi
 done
 
-echo Arguments are ${arr[@]}
+declare -a arr_bis
 
-seq 0 $((${#arr[*]}-2)) | while read i; do
-    if [[ "${arr[$i]}" == "-l" && "${arr[$(($i+1))]}" == "c" ]]; then
-        unset arr[$i]
-        unset arr[$(($i+1))]
+while read -r i; do
+    if [[ "${arr[$i]}" == "-l" && "${arr[$((i+1))]}" == "c" ]]; then
+          while read -r j; do
+          if [[ "$j" != "$i" && "$j" != "$((i+1))" ]]; then
+            arr_bis+=("${arr[$j]}")
+          fi
+        done < <(seq 0 $((${#arr[*]}-2)))
+        
+        arr=("${arr_bis[@]}")
+        
+        break
     fi
-done
+done < <(seq 0 $((${#arr[*]}-2)))
 
-echo Arguments are ${arr[@]}
-
-emcc ${arr[@]}
+emcc "${arr[@]}"
