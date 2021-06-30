@@ -4,28 +4,28 @@ arr=()
 
 for f in "$@"; do
     if [[ "$f" == *.rlib ]]; then
-        #echo Extracting $f
         
         ar --output "$(dirname $f)" -x $f
         
         ar -t $f | grep .o | while read o; do
             fo=$(dirname $f)/$o
             
-            #echo File $fo
             arr+=("$fo")
         done
     else
-        #echo Passing arg $f
         arr+=("$f")
     fi
 done
 
+echo Arguments are ${arr[@]}
+
 seq 0 $((${#arr[*]}-2)) | while read i; do
     if [[ "${arr[$i]}" == "-l" && "${arr[$(($i+1))]}" == "c" ]]; then
-        echo found !
         unset arr[$i]
         unset arr[$(($i+1))]
     fi
 done
+
+echo Arguments are ${arr[@]}
 
 emcc ${arr[@]}
