@@ -291,7 +291,7 @@ jobs:
           mkdir -v -p exports/android
           godot -v --export-debug "Android" exports/android/${EXPORT_NAME}.apk
 
-      - name: Get logs
+      - name: Get gradle logs
         if: ${{ always() }}
         run: |
           find androidPlugin/build/logs android/build/build/logs/ -type f -exec echo ::group::{} \; -exec cat {} \; -exec echo ::endgroup:: \;
