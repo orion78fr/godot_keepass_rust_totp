@@ -12,7 +12,7 @@ env:
   MACOS_SDK_TAR: https://s3.dockerproject.org/darwin/v2/MacOSX10.10.sdk.tar.xz
   MACOS_SDK_VERSION: 10.10
   MACOS_OSXCROSS_VERSION: 8a716a43a72dab1db9630d7824ee0af3730cb8f9
-  EMSDK_VERSION: 2.0.24
+  EMSDK_VERSION: 2.0.20
 
 jobs:
   export-win:
