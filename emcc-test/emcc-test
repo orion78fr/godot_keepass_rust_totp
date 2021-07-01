@@ -16,20 +16,20 @@ for f in "$@"; do
     fi
 done
 
-declare -a arr_bis
+#declare -a arr_bis
 
-while read -r i; do
-    if [[ "${arr[$i]}" == "-l" && "${arr[$((i+1))]}" == "c" ]]; then
-          while read -r j; do
-          if [[ "$j" != "$i" && "$j" != "$((i+1))" ]]; then
-            arr_bis+=("${arr[$j]}")
-          fi
-        done < <(seq 0 $((${#arr[*]}-2)))
-        
-        arr=("${arr_bis[@]}")
-        
-        break
-    fi
-done < <(seq 0 $((${#arr[*]}-2)))
+#while read -r i; do
+#    if [[ "${arr[$i]}" == "-l" && "${arr[$((i+1))]}" == "c" ]]; then
+#          while read -r j; do
+#          if [[ "$j" != "$i" && "$j" != "$((i+1))" ]]; then
+#            arr_bis+=("${arr[$j]}")
+#          fi
+#        done < <(seq 0 $((${#arr[*]}-2)))
+#        
+#        arr=("${arr_bis[@]}")
+#        
+#        break
+#    fi
+#done < <(seq 0 $((${#arr[*]}-2)))
 
 emcc "${arr[@]}"
