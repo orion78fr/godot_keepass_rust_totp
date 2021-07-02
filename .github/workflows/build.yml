@@ -278,6 +278,7 @@ jobs:
           # cp native/target/armv7-linux-androideabi/release/libgodot_rs_keepass.so android/build/libs/debug/armeabi-v7a/
 
       - name: Build
+        id: godot-build
         run: |
           mkdir -v -p ~/.config/godot/
           echo '[gd_resource type="EditorSettings" format=2]' >> ~/.config/godot/editor_settings-3.tres
@@ -290,6 +291,11 @@ jobs:
           echo 'export/android/shutdown_adb_on_exit = true' >> ~/.config/godot/editor_settings-3.tres
           mkdir -v -p exports/android
           godot -v --export-debug "Android" exports/android/${EXPORT_NAME}.apk
+
+      - name: DEBUG Try to call gradle ourself ?
+        if: steps.godot-build.outcome == 'failure'
+        run: ./gradlew assembleDebug
+        working-directory: ./android/build
 
       - name: Get gradle logs
         if: ${{ always() }}
