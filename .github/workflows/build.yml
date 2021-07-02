@@ -293,7 +293,7 @@ jobs:
           godot -v --export-debug "Android" exports/android/${EXPORT_NAME}.apk
 
       - name: DEBUG Try to call gradle ourself ?
-        if: steps.godot-build.outcome == 'failure'
+        if: ${{ always() }}
         run: ./gradlew assembleDebug
         working-directory: ./android/build
 
