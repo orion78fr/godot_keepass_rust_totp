@@ -193,18 +193,18 @@ jobs:
           toolchain: stable
           target: x86_64-linux-android
           profile: minimal
-      - name: Install armv7 android rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: armv7-linux-androideabi
-          profile: minimal
-      - name: Install i686 android rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: i686-linux-android
-          profile: minimal
+      # - name: Install armv7 android rust toolchain
+        # uses: actions-rs/toolchain@v1
+        # with:
+          # toolchain: stable
+          # target: armv7-linux-androideabi
+          # profile: minimal
+      # - name: Install i686 android rust toolchain
+        # uses: actions-rs/toolchain@v1
+        # with:
+          # toolchain: stable
+          # target: i686-linux-android
+          # profile: minimal
 
       - name: Setup JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v2
@@ -245,22 +245,22 @@ jobs:
         env:
           CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER: ${{env.ANDROID_SDK_ROOT}}/ndk/${{env.ANDROID_NDK_VERSION}}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${{env.ANDROID_VERSION}}-clang
           CARGO_TARGET_DIR: native/target
-      - name: Compile native lib for armv7 android
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --manifest-path native/src/Cargo.toml --target armv7-linux-androideabi --release
-        env:
-          CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER: ${{env.ANDROID_SDK_ROOT}}/ndk/${{env.ANDROID_NDK_VERSION}}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi${{env.ANDROID_VERSION}}-clang
-          CARGO_TARGET_DIR: native/target
-      - name: Compile native lib for i686 android
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --manifest-path native/src/Cargo.toml --target i686-linux-android --release
-        env:
-          CARGO_TARGET_I686_LINUX_ANDROID_LINKER: ${{env.ANDROID_SDK_ROOT}}/ndk/${{env.ANDROID_NDK_VERSION}}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android${{env.ANDROID_VERSION}}-clang
-          CARGO_TARGET_DIR: native/target
+      # - name: Compile native lib for armv7 android
+        # uses: actions-rs/cargo@v1
+        # with:
+          # command: build
+          # args: --manifest-path native/src/Cargo.toml --target armv7-linux-androideabi --release
+        # env:
+          # CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER: ${{env.ANDROID_SDK_ROOT}}/ndk/${{env.ANDROID_NDK_VERSION}}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi${{env.ANDROID_VERSION}}-clang
+          # CARGO_TARGET_DIR: native/target
+      # - name: Compile native lib for i686 android
+        # uses: actions-rs/cargo@v1
+        # with:
+          # command: build
+          # args: --manifest-path native/src/Cargo.toml --target i686-linux-android --release
+        # env:
+          # CARGO_TARGET_I686_LINUX_ANDROID_LINKER: ${{env.ANDROID_SDK_ROOT}}/ndk/${{env.ANDROID_NDK_VERSION}}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android${{env.ANDROID_VERSION}}-clang
+          # CARGO_TARGET_DIR: native/target
 
       - name: Compile android plugin
         run: ./gradlew assembleDebug
@@ -269,13 +269,13 @@ jobs:
       - name: Move native libs
         run: |
           mkdir -v -p android/build/libs/debug/x86_64
-          mkdir -v -p android/build/libs/debug/x86
+          # mkdir -v -p android/build/libs/debug/x86
           mkdir -v -p android/build/libs/debug/arm64-v8a
-          mkdir -v -p android/build/libs/debug/armeabi-v7a
+          # mkdir -v -p android/build/libs/debug/armeabi-v7a
           cp native/target/x86_64-linux-android/release/libgodot_rs_keepass.so android/build/libs/debug/x86_64/
-          cp native/target/i686-linux-android/release/libgodot_rs_keepass.so android/build/libs/debug/x86/
+          # cp native/target/i686-linux-android/release/libgodot_rs_keepass.so android/build/libs/debug/x86/
           cp native/target/aarch64-linux-android/release/libgodot_rs_keepass.so android/build/libs/debug/arm64-v8a/
-          cp native/target/armv7-linux-androideabi/release/libgodot_rs_keepass.so android/build/libs/debug/armeabi-v7a/
+          # cp native/target/armv7-linux-androideabi/release/libgodot_rs_keepass.so android/build/libs/debug/armeabi-v7a/
 
       - name: Build
         run: |
