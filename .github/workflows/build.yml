@@ -278,7 +278,7 @@ jobs:
           # cp native/target/armv7-linux-androideabi/release/libgodot_rs_keepass.so android/build/libs/debug/armeabi-v7a/
 
       - name: Build
-        id: godot-build
+        continue-on-error: true
         run: |
           mkdir -v -p ~/.config/godot/
           echo '[gd_resource type="EditorSettings" format=2]' >> ~/.config/godot/editor_settings-3.tres
@@ -293,9 +293,11 @@ jobs:
           godot -v --export-debug "Android" exports/android/${EXPORT_NAME}.apk
 
       - name: DEBUG Try to call gradle ourself ?
-        if: ${{ always() }}
-        run: ./gradlew assembleDebug
+        run: ./gradlew clean assembleDebug -Pexport_package_name=fr.orion78.keepassrusttotp -Pexport_version_code=1 -Pexport_version_name=1.0 -Pexport_enabled_abis="armeabi-v7a|arm64-v8a|x86|x86_64" -Pplugins_local_binaries=../../androidPlugin/app/build/outputs/aar/app-debug.aar -Pplugins_remote_binaries= -Pplugins_maven_repos= -Pperform_zipalign=true -Pperform_signing=true -Pgodot_editor_version=3.3.2.stable
         working-directory: ./android/build
+        
+      - name: DEBUG Copy the output
+        run: cp android/build/build/outputs/apk/android_debug.apk exports/android/${EXPORT_NAME}.apk
 
       - name: Get gradle logs
         if: ${{ always() }}
