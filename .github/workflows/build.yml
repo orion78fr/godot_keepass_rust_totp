@@ -297,7 +297,7 @@ jobs:
         working-directory: ./android/build
         
       - name: DEBUG Copy the output
-        run: cp android/build/build/outputs/apk/android_debug.apk exports/android/${EXPORT_NAME}.apk
+        run: cp android/build/build/outputs/apk/debug/android_debug.apk exports/android/${EXPORT_NAME}.apk
 
       - name: Get gradle logs
         if: ${{ always() }}
