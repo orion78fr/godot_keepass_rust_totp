@@ -9,6 +9,7 @@ gdnative = "0.9.3"
 keepass = "0.4.9"
 otpauth-uri = "1.0.3"
 base64 = "0.13"
+crypto-mac = "0.6.2"
 
 # Dependencies for tests
 [dev-dependencies]
@@ -22,7 +23,8 @@ opt-level = 3
 lto = true
 
 [patch.crates-io]
-chrono = { git = 'https://github.com/orion78fr/chrono', branch = "main" }
+chrono = { git = 'https://github.com/chronotope/chrono', rev = "f6bd567bb677262645c1fc3131c8c1071cd77ec3" }
 otpauth-uri = { git = 'https://github.com/orion78fr/otpauth-uri', branch = "master" }
 keepass = { git = 'https://github.com/orion78fr/keepass-rs', branch = "master" }
-gdnative-sys = { git = "https://github.com/orion78fr/godot-rust", branch = "fix-msvc" }
+gdnative = { git = "https://github.com/godot-rust/godot-rust", rev = "42a6e768a02ed32068ae1dfe5a5e655181ea2e6f" }
+crypto-mac = { git = "https://github.com/RustCrypto/traits", tag = "crypto-mac-v0.6.2" } # Version is yanked

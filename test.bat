@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\Steam\steamapps\common\Godot Engine\godot.windows.opt.tools.64.exe" -v --no-window --export-debug "Android" C:/msys64/home/orion/godot_keepass_rust_totp/keepassTotp.apk

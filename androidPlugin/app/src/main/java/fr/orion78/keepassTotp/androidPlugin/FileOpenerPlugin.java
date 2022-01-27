@@ -77,7 +77,6 @@ public class FileOpenerPlugin extends GodotPlugin {
             try {
                 byte[] fileData = readFile(data.getData());
                 emitSignal(GET_FILE_SIGNAL_NAME, fileData);
-                // TODO send signal
             } catch (IOException e) {
                 Log.e("File Opener Plugin", "", e);
             }

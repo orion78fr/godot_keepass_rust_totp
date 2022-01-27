@@ -1,5 +1,7 @@
 use gdnative::api::{File, Reference};
+use gdnative::core_types::GodotResult;
 use gdnative::prelude::*;
+
 use keepass::{Database, Group};
 use std::io::Write;
 use std::time::SystemTime;
@@ -171,8 +173,8 @@ impl From<keepass::Result<Database>> for ResultWrapper<Database, Error> {
     }
 }
 
-impl From<gdnative::GodotResult> for ResultWrapper<Database, Error> {
-    fn from(r: gdnative::GodotResult) -> Self {
+impl From<GodotResult> for ResultWrapper<Database, Error> {
+    fn from(r: GodotResult) -> Self {
         ResultWrapper(match r {
             Ok(_) => Err(Error::Ok),
             Err(e) => Err(Error::GodotError(e)),
