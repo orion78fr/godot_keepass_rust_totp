@@ -4,6 +4,8 @@ use keepass::{Database, Group};
 use std::io::Write;
 use std::time::SystemTime;
 
+use itertools::Itertools;
+
 use xotp::totp::TOTP;
 use xotp::util::{parse_otpauth_uri, ParseResult};
 
@@ -65,6 +67,7 @@ impl KeepassTotp {
                 }
                 e
             })
+            .sorted_by(|x, y| Ord::cmp(&x.name, &y.name))
             .map(Instance::emplace)
             .map(|i| i.owned_to_variant())
             .collect());
