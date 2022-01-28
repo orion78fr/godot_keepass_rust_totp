@@ -9,6 +9,9 @@ use itertools::Itertools;
 use xotp::totp::TOTP;
 use xotp::util::{parse_otpauth_uri, ParseResult};
 
+#[cfg(target_os = "android")]
+mod android;
+
 #[derive(NativeClass)]
 #[inherit(Reference)]
 struct KeepassTotp;
