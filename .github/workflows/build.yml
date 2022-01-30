@@ -2,7 +2,7 @@ name: Godot build and exports
 on: [push, pull_request]
 
 env:
-  GODOT_VERSION: 3.3
+  GODOT_VERSION: 3.4.2
   EXPORT_NAME: keepassTotp
   CARGO_TERM_COLOR: always
   JAVA_VERSION: 17
@@ -19,7 +19,7 @@ jobs:
     name: Windows export
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:3.3
+      image: barichello/godot-ci:3.4.2
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -61,7 +61,7 @@ jobs:
     name: Linux export
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:3.3
+      image: barichello/godot-ci:3.4.2
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -102,7 +102,7 @@ jobs:
     name: MacOSX export
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:3.3
+      image: barichello/godot-ci:3.4.2
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -172,7 +172,7 @@ jobs:
     name: Android export
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:3.3
+      image: barichello/godot-ci:3.4.2
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -290,7 +290,7 @@ jobs:
     name: HTML5 export
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:3.3
+      image: barichello/godot-ci:3.4.2
     steps:
       - name: Checkout
         uses: actions/checkout@v2
