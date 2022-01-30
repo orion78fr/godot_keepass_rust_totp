@@ -5,7 +5,7 @@ env:
   GODOT_VERSION: 3.3
   EXPORT_NAME: keepassTotp
   CARGO_TERM_COLOR: always
-  JAVA_VERSION: 1.8
+  JAVA_VERSION: 17
   ANDROID_VERSION: 30
   ANDROID_NDK_VERSION: 22.1.7171670
   ANDROID_BUILD_TOOLS_VERSION: 30.0.3
@@ -207,9 +207,10 @@ jobs:
           profile: minimal
 
       - name: Setup JDK ${{env.JAVA_VERSION}}
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
           java-version: ${{env.JAVA_VERSION}}
+          distribution: temurin
 
       - name: Cache android toolchain and packages
         id: android-cache
