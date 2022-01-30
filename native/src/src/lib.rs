@@ -48,39 +48,51 @@ impl KeepassTotp {
     }
 
     #[export]
-    fn open_keepass_db(
+    pub fn open_keepass_db(
         &mut self,
         _owner: TRef<Reference>,
         db_path: GodotString,
         pwd: Option<String>,
     ) -> Result<Vec<Variant>, String> {
-        let db = open_db(db_path, pwd)?;
-
-        let Database { root, metadata, .. } = db;
-
-        return Ok(iterate_group(&root)
-            .into_iter()
-            .map(|mut e| {
-                if let Icon::CustomRef(uuid) = &e.icon {
-                    // TODO
-                    e.icon = Icon::Custom(
-                        base64::decode(metadata.as_ref().unwrap().custom_icons.get(uuid).unwrap())
-                            .unwrap(),
-                    )
-                }
-                e
-            })
-            .sorted_by(|x, y| Ord::cmp(&x.name, &y.name))
-            .map(Instance::emplace)
-            .map(|i| i.owned_to_variant())
-            .collect());
+        Ok(process_keepass_db(open_db(db_path, pwd)?))
     }
+
+    #[export]
+    pub fn read_keepass_db(
+        &mut self,
+        _owner: TRef<Reference>,
+        db_bytes: ByteArray,
+        pwd: Option<String>,
+    ) -> Result<Vec<Variant>, String> {
+        Ok(process_keepass_db(read_db(&mut &*db_bytes.to_vec(), pwd)?))
+    }
+}
+
+fn process_keepass_db(db: Database) -> Vec<Variant> {
+    let Database { root, metadata, .. } = db;
+
+    return iterate_group(&root)
+        .into_iter()
+        .map(|mut e| {
+            if let Icon::CustomRef(uuid) = &e.icon {
+                // TODO
+                e.icon = Icon::Custom(
+                    base64::decode(metadata.as_ref().unwrap().custom_icons.get(uuid).unwrap())
+                        .unwrap(),
+                )
+            }
+            e
+        })
+        .sorted_by(|x, y| Ord::cmp(&x.name, &y.name))
+        .map(Instance::emplace)
+        .map(|i| i.owned_to_variant())
+        .collect();
 }
 
 #[methods]
 impl TOTPEntry {
     #[export]
-    fn generate(&self, _owner: TRef<Reference>) -> Option<String> {
+    pub fn generate(&self, _owner: TRef<Reference>) -> Option<String> {
         let now = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap()
@@ -90,7 +102,7 @@ impl TOTPEntry {
     }
 
     #[export]
-    fn get_custom_icon(&self, _owner: TRef<Reference>) -> Option<Vec<u8>> {
+    pub fn get_custom_icon(&self, _owner: TRef<Reference>) -> Option<Vec<u8>> {
         match &self.icon {
             Icon::Custom(bytes) => Some(bytes.clone()),
             _ => None,
@@ -99,9 +111,9 @@ impl TOTPEntry {
 }
 
 // We can't implement a foreign trait on a foreign type, so we have to wrap it
-struct FileWrapper(Ref<gdnative::api::File, Unique>);
+struct GodotFileWrapper(Ref<gdnative::api::File, Unique>);
 
-impl std::io::Read for FileWrapper {
+impl std::io::Read for GodotFileWrapper {
     fn read(&mut self, mut buf: &mut [u8]) -> std::io::Result<usize> {
         let read_size: i64 =
             std::cmp::min(buf.len() as i64, self.0.get_len() - self.0.get_position());
@@ -114,10 +126,13 @@ impl std::io::Read for FileWrapper {
 
 fn open_db(path: GodotString, pwd: Option<String>) -> Result<Database, String> {
     let f = File::new();
-
     f.open(path, File::READ).map_err(|e| format!("{:?}", e))?;
 
-    Database::open(&mut FileWrapper(f), pwd.as_deref(), None).map_err(|e| format!("{:?}", e))
+    read_db(&mut GodotFileWrapper(f), pwd)
+}
+
+fn read_db(data: &mut dyn std::io::Read, pwd: Option<String>) -> Result<Database, String> {
+    Database::open(data, pwd.as_deref(), None).map_err(|e| format!("{:?}", e))
 }
 
 fn iterate_group(group: &Group) -> Vec<TOTPEntry> {

@@ -4,7 +4,7 @@ use jni::JNIEnv;
 
 use jni_fn::jni_fn;
 
-#[jni_fn("fr.orion78.godot_keepass_rust_totp.Native")]
+#[jni_fn("fr.orion78.keepassTotp.androidPlugin.Native")]
 pub fn hello_world(env: JNIEnv, _class: JClass, input: JString) -> jstring {
     let input: String = env
         .get_string(input)
