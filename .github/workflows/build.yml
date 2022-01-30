@@ -262,6 +262,11 @@ jobs:
         env:
           CARGO_TARGET_I686_LINUX_ANDROID_LINKER: ${{env.ANDROID_SDK_ROOT}}/ndk/${{env.ANDROID_NDK_VERSION}}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android${{env.ANDROID_VERSION}}-clang
           CARGO_TARGET_DIR: native/target
+
+      - name: Compile android plugin
+        run: ./gradlew assembleDebug
+        working-directory: ./androidPlugin
+
       - name: Build
         run: |
           godot -e -q
