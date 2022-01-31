@@ -1,11 +1,16 @@
+use gdnative::api::{File, Reference};
 use gdnative::prelude::*;
-use gdnative::api::{Reference, File};
 use keepass::{Database, Group};
 use std::io::Write;
 use std::time::SystemTime;
 
-use otpauth_uri::parser::parse_otpauth_uri;
-use otpauth_uri::types::{OTPGenerator};
+use itertools::Itertools;
+
+use xotp::totp::TOTP;
+use xotp::util::{parse_otpauth_uri, ParseResult};
+
+#[cfg(target_os = "android")]
+mod android;
 
 #[derive(NativeClass)]
 #[inherit(Reference)]
@@ -15,7 +20,7 @@ struct KeepassTotp;
 #[inherit(Reference)]
 #[no_constructor]
 struct TOTPEntry {
-    otp: Option<OTPGenerator>,
+    otp: TOTP,
 
     #[property]
     name: String,
@@ -43,66 +48,75 @@ impl KeepassTotp {
     }
 
     #[export]
-    fn open_keepass_db(&mut self,
-                       _owner: TRef<Reference>,
-                       db_path: GodotString,
-                       pwd: Option<String>) -> Result<Vec<Variant>, String> {
-        let db = open_db(db_path, pwd);
-        if db.0.is_err() {
-            return Err(format!("{:?}", db.0.unwrap_err()));
-        }
-
-        let Database { root, metadata, .. } = db.0.unwrap();
-
-        return Ok(iterate_group(&root)
-            .into_iter()
-            .map(|mut e| {
-                if let Icon::CustomRef(uuid) = &e.icon {
-                    // TODO
-                    e.icon = Icon::Custom(base64::decode(metadata.as_ref().unwrap().custom_icons.get(uuid).unwrap()).unwrap())
-                }
-                e
-            })
-            .map(Instance::emplace)
-            .map(|i| i.owned_to_variant())
-            .collect());
+    pub fn open_keepass_db(
+        &mut self,
+        _owner: TRef<Reference>,
+        db_path: GodotString,
+        pwd: Option<String>,
+    ) -> Result<Vec<Variant>, String> {
+        Ok(process_keepass_db(open_db(db_path, pwd)?))
     }
+
+    #[export]
+    pub fn read_keepass_db(
+        &mut self,
+        _owner: TRef<Reference>,
+        db_bytes: ByteArray,
+        pwd: Option<String>,
+    ) -> Result<Vec<Variant>, String> {
+        Ok(process_keepass_db(read_db(&mut &*db_bytes.to_vec(), pwd)?))
+    }
+}
+
+fn process_keepass_db(db: Database) -> Vec<Variant> {
+    let Database { root, metadata, .. } = db;
+
+    return iterate_group(&root)
+        .into_iter()
+        .map(|mut e| {
+            if let Icon::CustomRef(uuid) = &e.icon {
+                // TODO
+                e.icon = Icon::Custom(
+                    base64::decode(metadata.as_ref().unwrap().custom_icons.get(uuid).unwrap())
+                        .unwrap(),
+                )
+            }
+            e
+        })
+        .sorted_by(|x, y| Ord::cmp(&x.name, &y.name))
+        .map(Instance::emplace)
+        .map(|i| i.owned_to_variant())
+        .collect();
 }
 
 #[methods]
 impl TOTPEntry {
     #[export]
-    fn generate(&self,
-                _owner: TRef<Reference>) -> Option<String> {
-        match self.otp.as_ref().unwrap() {
-            OTPGenerator::TOTPGenerator(g) => {
-                let now = SystemTime::now()
-                    .duration_since(SystemTime::UNIX_EPOCH).unwrap()
-                    .as_secs();
+    pub fn generate(&self, _owner: TRef<Reference>) -> Option<String> {
+        let now = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
 
-                Some(g.generate(now))
-            }
-            OTPGenerator::HOTPGenerator(_) => None
-        }
+        Some(self.otp.get_otp(now).as_string())
     }
 
     #[export]
-    fn get_custom_icon(&self,
-                       _owner: TRef<Reference>) -> Option<Vec<u8>> {
+    pub fn get_custom_icon(&self, _owner: TRef<Reference>) -> Option<Vec<u8>> {
         match &self.icon {
             Icon::Custom(bytes) => Some(bytes.clone()),
-            _ => None
+            _ => None,
         }
     }
 }
 
 // We can't implement a foreign trait on a foreign type, so we have to wrap it
-struct FileWrapper(Ref<gdnative::api::File, Unique>);
+struct GodotFileWrapper(Ref<gdnative::api::File, Unique>);
 
-impl std::io::Read for FileWrapper {
+impl std::io::Read for GodotFileWrapper {
     fn read(&mut self, mut buf: &mut [u8]) -> std::io::Result<usize> {
-        let read_size: i64 = std::cmp::min(buf.len() as i64,
-                                           self.0.get_len() - self.0.get_position());
+        let read_size: i64 =
+            std::cmp::min(buf.len() as i64, self.0.get_len() - self.0.get_position());
 
         let b = self.0.as_ref().get_buffer(read_size);
         let res = buf.write(b.read().as_slice());
@@ -110,53 +124,15 @@ impl std::io::Read for FileWrapper {
     }
 }
 
-fn init(handle: InitHandle) {
-    handle.add_class::<KeepassTotp>();
-    handle.add_class::<TOTPEntry>();
-}
-
-#[derive(Debug)]
-pub struct ResultWrapper<T, U>(Result<T, U>);
-
-#[derive(Debug)]
-pub enum Error {
-    Ok,
-    StringError(String),
-    GodotError(gdnative::core_types::GodotError),
-    KeepassError(keepass::Error),
-}
-
-impl From<keepass::Result<Database>> for ResultWrapper<Database, Error> {
-    fn from(r: keepass::Result<Database>) -> Self {
-        ResultWrapper(match r {
-            Ok(db) => Ok(db),
-            Err(e) => Err(Error::KeepassError(e))
-        })
-    }
-}
-
-impl From<gdnative::GodotResult> for ResultWrapper<Database, Error> {
-    fn from(r: gdnative::GodotResult) -> Self {
-        ResultWrapper(match r {
-            Ok(_) => Err(Error::Ok),
-            Err(e) => Err(Error::GodotError(e))
-        })
-    }
-}
-
-fn open_db(path: GodotString, pwd: Option<String>) -> ResultWrapper<Database, Error> {
+fn open_db(path: GodotString, pwd: Option<String>) -> Result<Database, String> {
     let f = File::new();
-    let r = f.open(path, File::READ);
+    f.open(path, File::READ).map_err(|e| format!("{:?}", e))?;
 
-    if r.is_err() {
-        return ResultWrapper(Result::Err(Error::GodotError(r.unwrap_err())));
-    }
+    read_db(&mut GodotFileWrapper(f), pwd)
+}
 
-    Database::open(
-        &mut FileWrapper(f),
-        pwd.as_deref(),
-        None,
-    ).into()
+fn read_db(data: &mut dyn std::io::Read, pwd: Option<String>) -> Result<Database, String> {
+    Database::open(data, pwd.as_deref(), None).map_err(|e| format!("{:?}", e))
 }
 
 fn iterate_group(group: &Group) -> Vec<TOTPEntry> {
@@ -179,24 +155,33 @@ fn iterate_group(group: &Group) -> Vec<TOTPEntry> {
 
                     let icon = &entry.icon;
 
-                    res.push(TOTPEntry {
-                        otp: parse_otpauth_uri(otp.unwrap()).map(OTPGenerator::from).ok(),
-                        name: title.to_string(),
-                        user: user.to_string(),
-                        pass: pass.to_string(),
-                        url: url.to_string(),
-                        icon: match icon {
-                            keepass::Icon::None => Icon::None,
-                            keepass::Icon::IconID(id) => Icon::Id(*id),
-                            keepass::Icon::CustomIcon(uuid) => Icon::CustomRef(uuid.clone())
-                        },
-                    });
+                    let otp = parse_otpauth_uri(otp.unwrap());
+
+                    if let Ok(ParseResult::TOTP(totp)) = otp {
+                        res.push(TOTPEntry {
+                            otp: totp,
+                            name: title.to_string(),
+                            user: user.to_string(),
+                            pass: pass.to_string(),
+                            url: url.to_string(),
+                            icon: match icon {
+                                keepass::Icon::None => Icon::None,
+                                keepass::Icon::IconID(id) => Icon::Id(*id),
+                                keepass::Icon::CustomIcon(uuid) => Icon::CustomRef(uuid.clone()),
+                            },
+                        });
+                    }
                 }
             }
         }
     }
 
     return res;
+}
+
+fn init(handle: InitHandle) {
+    handle.add_class::<KeepassTotp>();
+    handle.add_class::<TOTPEntry>();
 }
 
 godot_init!(init);
@@ -210,7 +195,8 @@ fn test() {
         &mut File::open(Path::new("../../test/totp_test.kdbx")).unwrap(),
         Some("azerty"),
         None,
-    ).unwrap();
+    )
+    .unwrap();
 
     db.header;
 }

@@ -2,16 +2,21 @@
 name = "godot_rs_keepass"
 version = "0.1.1"
 authors = ["Guillaume Turchini <orion+github@orion78.fr>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 gdnative = "0.9.3"
 keepass = "0.4.9"
-otpauth-uri = "1.0.3"
+xotp = "0.4.0"
 base64 = "0.13"
+itertools = "0.10.3"
 
 # Dependencies for tests
 [dev-dependencies]
+
+[target.'cfg(target_os="android")'.dependencies]
+jni = "0.19.0"
+jni_fn = "0.1.0"
 
 [lib]
 crate-type = ["cdylib"]
@@ -21,8 +26,7 @@ debug = true
 opt-level = 3
 lto = true
 
-# Try to patch the chrono compile bug for wasm target
 [patch.crates-io]
-chrono = { git = 'https://github.com/orion78fr/chrono', branch = "main" }
-otpauth-uri = { git = 'https://github.com/orion78fr/otpauth-uri', branch = "master" }
 keepass = { git = 'https://github.com/orion78fr/keepass-rs', branch = "master" }
+chrono = { git = 'https://github.com/chronotope/chrono', ref = "f6bd567bb677262645c1fc3131c8c1071cd77ec3" }
+gdnative = { git = "https://github.com/godot-rust/godot-rust.git", branch = "master"}

@@ -2,10 +2,10 @@ name: Godot build and exports
 on: [push, pull_request]
 
 env:
-  GODOT_VERSION: 3.3
+  GODOT_VERSION: 3.4.2
   EXPORT_NAME: keepassTotp
   CARGO_TERM_COLOR: always
-  JAVA_VERSION: 1.8
+  JAVA_VERSION: 17
   ANDROID_VERSION: 30
   ANDROID_NDK_VERSION: 22.1.7171670
   ANDROID_BUILD_TOOLS_VERSION: 30.0.3
@@ -19,7 +19,7 @@ jobs:
     name: Windows export
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:3.3
+      image: barichello/godot-ci:3.4.2
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -61,7 +61,7 @@ jobs:
     name: Linux export
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:3.3
+      image: barichello/godot-ci:3.4.2
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -102,7 +102,7 @@ jobs:
     name: MacOSX export
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:3.3
+      image: barichello/godot-ci:3.4.2
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -172,7 +172,7 @@ jobs:
     name: Android export
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:3.3
+      image: barichello/godot-ci:3.4.2
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -207,9 +207,10 @@ jobs:
           profile: minimal
 
       - name: Setup JDK ${{env.JAVA_VERSION}}
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
           java-version: ${{env.JAVA_VERSION}}
+          distribution: temurin
 
       - name: Cache android toolchain and packages
         id: android-cache
@@ -262,9 +263,15 @@ jobs:
         env:
           CARGO_TARGET_I686_LINUX_ANDROID_LINKER: ${{env.ANDROID_SDK_ROOT}}/ndk/${{env.ANDROID_NDK_VERSION}}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android${{env.ANDROID_VERSION}}-clang
           CARGO_TARGET_DIR: native/target
+
+      - name: Compile android plugin
+        run: ./gradlew assembleDebug
+        working-directory: ./androidPlugin
+
       - name: Build
         run: |
-          godot -e -q
+          mkdir ~/.config
+          cp -r /root/.config/godot ~/.config/godot
           echo 'export/android/android_sdk_path = "'${ANDROID_SDK_ROOT}'"' >> ~/.config/godot/editor_settings-3.tres
           echo 'export/android/debug_keystore = "/root/debug.keystore"' >> ~/.config/godot/editor_settings-3.tres
           echo 'export/android/debug_keystore_user = "androiddebugkey"' >> ~/.config/godot/editor_settings-3.tres
@@ -273,6 +280,13 @@ jobs:
           echo 'export/android/shutdown_adb_on_exit = true' >> ~/.config/godot/editor_settings-3.tres
           mkdir -v -p exports/android
           godot -v --export-debug "Android" exports/android/${EXPORT_NAME}.apk
+          
+          
+      - name: Display gradle log output for debugging
+        if: ${{ always() }}
+        run: |
+          find androidPlugin/logs android/build/logs/ -type f -exec echo ::group::{} \; -exec cat {} \; -exec echo ::endgroup:: \;
+          
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
@@ -284,7 +298,7 @@ jobs:
     name: HTML5 export
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:3.3
+      image: barichello/godot-ci:3.4.2
     steps:
       - name: Checkout
         uses: actions/checkout@v2
