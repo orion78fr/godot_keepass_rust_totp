@@ -98,7 +98,7 @@ impl TOTPEntry {
             .unwrap()
             .as_secs();
 
-        Some(self.otp.get_otp(now).to_string())
+        Some(self.otp.get_otp(now).as_string())
     }
 
     #[export]
