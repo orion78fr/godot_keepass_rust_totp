@@ -21,7 +21,8 @@ Here I will list various useful links / tips :
  - [Auto completion for Jetbrains IDEs](https://godot-rust.github.io/book/faq.html#auto-completion-with-intellij-rust-plugin)
  - I use [Github Actions](https://github.com/orion78fr/godot_keepass_rust_totp/blob/master/.github/workflows/build.yml) to compile to all targets (except iOS, cause I didn't take the time to set it up)
  - Wasm target for godot-rust was not really supported, but I made it work with various hacks. [Example (might not work, I'm using this to do tests)](https://orion78.fr/godot_test/keepassTotp.html)
- - Fixed bug in `chrono` crate related to compilation for wasm target [BUG #519](https://github.com/chronotope/chrono/issues/519) [PR #568](https://github.com/chronotope/chrono/pull/568) [Temporary repo](https://github.com/orion78fr/chrono)
+ - Fixed bug in `chrono` crate related to compilation for wasm target [BUG #519](https://github.com/chronotope/chrono/issues/519) [PR #568](https://github.com/chronotope/chrono/pull/568)
+ - Fixed bug in `gdnative-sys` for Android compilation on Windows [PR #754](https://github.com/godot-rust/godot-rust/pull/754)
 
 # Contribute
 
