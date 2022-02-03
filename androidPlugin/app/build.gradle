@@ -29,12 +29,15 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+
     compileOnly files('libs/godot-lib.3.4.2.stable.release.aar')
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    testImplementation 'junit:junit:4.13.2'
+
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
 
 def tstamp = new Date().format('yyyy-MM-dd_HH-mm-ss')
@@ -43,13 +46,13 @@ mkdir("${buildLogDir}")
 def buildLog = new File("${buildLogDir}/${tstamp}_buildLog.log")
 import org.gradle.internal.logging.*
 
-gradle.services.get(LoggingOutputInternal).addStandardOutputListener (new StandardOutputListener () {
+gradle.services.get(LoggingOutputInternal).addStandardOutputListener(new StandardOutputListener() {
     void onOutput(CharSequence output) {
         buildLog << output
     }
 })
 
-gradle.services.get(LoggingOutputInternal).addStandardErrorListener (new StandardOutputListener () {
+gradle.services.get(LoggingOutputInternal).addStandardErrorListener(new StandardOutputListener() {
     void onOutput(CharSequence output) {
         buildLog << output
     }

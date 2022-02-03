@@ -52,7 +52,7 @@ public class AndroidPlugin extends GodotPlugin {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*");
 
-        Log.e("File Helper Plugin", "Starting a file open request with result " + REQUEST_RESULT_GET_FILE);
+        Log.d("File Helper Plugin", "Starting a file open request with result " + REQUEST_RESULT_GET_FILE);
         getActivity().startActivityForResult(intent, REQUEST_RESULT_GET_FILE);
     }
 
@@ -73,11 +73,11 @@ public class AndroidPlugin extends GodotPlugin {
     public void onMainActivityResult(int requestCode, int resultCode, Intent data) {
         super.onMainActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_RESULT_GET_FILE && resultCode == Activity.RESULT_OK) {
-            Log.e("File Helper Plugin", "Got a file ! " + data.getData().toString());
+            Log.d("File Helper Plugin", "Got a file ! " + data.getData().toString());
 
             try {
                 byte[] fileData = readFile(data.getData());
-                emitSignal(GET_FILE_SIGNAL_NAME, fileData);
+                emitSignal(GET_FILE_SIGNAL_NAME, new Object[]{fileData});
             } catch (IOException e) {
                 Log.e("File Helper Plugin", "", e);
             }

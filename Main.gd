@@ -16,6 +16,8 @@ func _ready():
 	var os_name = OS.get_name()
 
 	if os_name == "Android":
+		$AdParent.position.y = safe_area.position.y
+		
 		if !Engine.has_singleton("Android Helper Plugin"):
 			$DebugLabel.text = "Cannot find the android plugin"
 			return
@@ -74,3 +76,11 @@ func display_totps():
 		var button = OtpButton.instance()
 		button.set_otp(totp)
 		$"ScrollContainer/VBoxContainer".add_child(button)
+	
+	
+	$AdParent/AdMob.load_banner()
+
+func _on_AdMob_banner_loaded():
+	$AdParent/AdMob.show_banner()
+	$ScrollContainer.rect_position.y = OS.get_window_safe_area().position.y + $AdParent/AdMob.get_banner_dimension().y
+	$ScrollContainer.rect_size.y = OS.get_window_safe_area().size.y - $AdParent/AdMob.get_banner_dimension().y

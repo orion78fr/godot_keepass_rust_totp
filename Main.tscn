@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://OtpButtonContainer.gd" type="Script" id=1]
 [ext_resource path="res://Main.gd" type="Script" id=2]
 [ext_resource path="res://font/roboto.tres" type="DynamicFont" id=3]
+[ext_resource path="res://admob-lib/admob.gd" type="Script" id=4]
 
 [sub_resource type="Animation" id=1]
 resource_name = "Timer"
@@ -43,6 +44,12 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="AdParent" type="Node2D" parent="."]
+
+[node name="AdMob" type="Node" parent="AdParent"]
+script = ExtResource( 4 )
+banner_id = "ca-app-pub-3940256099942544/6300978111"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 margin_right = 656.0
@@ -174,6 +181,7 @@ text = "OK"
 autoplay = "Timer"
 anims/Timer = SubResource( 1 )
 
+[connection signal="banner_loaded" from="AdParent/AdMob" to="." method="_on_AdMob_banner_loaded"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]
 [connection signal="popup_hide" from="ErrorDialog" to="." method="_on_ErrorDialog_popup_hide"]
 [connection signal="text_entered" from="PasswordDialog/CenterContainer/HBoxContainer/LineEdit" to="." method="_on_LineEdit_text_entered"]

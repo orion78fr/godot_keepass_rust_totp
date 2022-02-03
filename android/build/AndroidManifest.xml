@@ -42,6 +42,10 @@
         <meta-data
             android:name="xr_mode_metadata_name"
             android:value="xr_mode_metadata_value" />
+            
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
 
         <!-- XR hand tracking metadata -->
         <!-- This is modified by the exporter based on the selected xr mode. DO NOT CHANGE the values here. -->

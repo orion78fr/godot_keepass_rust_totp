@@ -9,12 +9,18 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node",
+"class": "AdMob",
+"language": "GDScript",
+"path": "res://admob-lib/admob.gd"
+}, {
 "base": "",
 "class": "KeepassTotp",
 "language": "NativeScript",
 "path": "res://native/KeepassTotp.gdns"
 } ]
 _global_script_class_icons={
+"AdMob": "",
 "KeepassTotp": ""
 }
 
